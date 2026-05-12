@@ -66,3 +66,4 @@ This project is supported by MacStadium Open Source Developer Program with a fre
 ### License
 
 GitX is licensed under the GPL version 2. For more information, see the attached COPYING file.
+
