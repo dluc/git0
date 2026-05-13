@@ -682,25 +682,47 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 
 - (BOOL)tableView:(NSTableView *)tv writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
-	// Copy the row numbers to the pasteboard.
-	[pboard declareTypes:[NSArray arrayWithObjects:FileChangesTableViewType, NSFilenamesPboardType, nil] owner:self];
+	// We write:
+	//   - A single internal pasteboard item carrying the dragged row indexes
+	//     (FileChangesTableViewType) — consumed only by our own acceptDrop.
+	//   - One pasteboard item per file URL (NSPasteboardTypeFileURL) — so that
+	//     dragging into Finder/Xcode/TextMate hands them the actual paths.
+	//
+	// This replaces the legacy single-item NSFilenamesPboardType property list,
+	// which was deprecated in macOS 10.14.
 
-	// Internal, for dragging from one tableview to the other
-	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:rowIndexes
-										 requiringSecureCoding:NO
-														 error:NULL];
-	[pboard setData:data forType:FileChangesTableViewType];
+	[pboard clearContents];
 
-	// External, to drag them to for example XCode or Textmate
 	NSArrayController *controller = [tv tag] == 0 ? unstagedFilesController : stagedFilesController;
-	NSArray *files = [controller.arrangedObjects objectsAtIndexes:rowIndexes];
+	NSArray<PBChangedFile *> *files = [controller.arrangedObjects objectsAtIndexes:rowIndexes];
 	NSURL *workingDirectoryURL = self.repository.workingDirectoryURL;
 
-	NSMutableArray<NSString *> *paths = [NSMutableArray arrayWithCapacity:rowIndexes.count];
-	for (PBChangedFile *file in files) {
-		[paths addObject:[[workingDirectoryURL URLByAppendingPathComponent:file.path] path]];
+	NSData *indexData = [NSKeyedArchiver archivedDataWithRootObject:rowIndexes
+											  requiringSecureCoding:NO
+															  error:NULL];
+
+	NSMutableArray<NSPasteboardItem *> *items = [NSMutableArray arrayWithCapacity:files.count];
+
+	// First item also carries the internal index payload.
+	NSPasteboardItem *first = [[NSPasteboardItem alloc] init];
+	[first setData:indexData forType:FileChangesTableViewType];
+	if (files.count > 0 && workingDirectoryURL) {
+		NSURL *fileURL = [workingDirectoryURL URLByAppendingPathComponent:files.firstObject.path];
+		[first setString:fileURL.absoluteString forType:NSPasteboardTypeFileURL];
 	}
-	[pboard setPropertyList:paths forType:NSFilenamesPboardType];
+	[items addObject:first];
+
+	for (NSUInteger i = 1; i < files.count; i++) {
+		PBChangedFile *file = files[i];
+		NSPasteboardItem *item = [[NSPasteboardItem alloc] init];
+		if (workingDirectoryURL) {
+			NSURL *fileURL = [workingDirectoryURL URLByAppendingPathComponent:file.path];
+			[item setString:fileURL.absoluteString forType:NSPasteboardTypeFileURL];
+		}
+		[items addObject:item];
+	}
+
+	[pboard writeObjects:items];
 
 	return YES;
 }

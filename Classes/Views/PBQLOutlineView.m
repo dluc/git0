@@ -9,13 +9,18 @@
 #import "PBQLOutlineView.h"
 #import "PBGitTree.h"
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
+@interface PBQLOutlineView () <NSFilePromiseProviderDelegate>
+@end
+
 @implementation PBQLOutlineView
 
 - initWithCoder:(NSCoder *)coder
 {
 	id a = [super initWithCoder:coder];
 	[a setDataSource:a];
-	[a registerForDraggedTypes:[NSArray arrayWithObject:NSFilesPromisePboardType]];
+	[a registerForDraggedTypes:@[ NSPasteboardTypeFileURL ]];
 	return a;
 }
 
@@ -35,27 +40,57 @@
 	[super keyDown:event];
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView writeItems:(NSArray *)items toPasteboard:(NSPasteboard *)pb
+#pragma mark - File promise (modern replacement for NSFilesPromisePboardType)
+
+// Modern NSOutlineView drag source hook. Returning an NSFilePromiseProvider
+// per item replaces the legacy writeItems:toPasteboard: + promised-files
+// path that relied on NSFilesPromisePboardType (deprecated in macOS 10.14).
+- (id<NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item
 {
-	NSMutableArray *fileNames = [NSMutableArray array];
-	for (id tree in items)
-		[fileNames addObject:[[[tree representedObject] path] pathExtension]];
+	PBGitTree *tree = [item representedObject];
+	NSString *extension = [tree.path pathExtension];
 
-	[pb declareTypes:[NSArray arrayWithObject:NSFilesPromisePboardType] owner:self];
-	[pb setPropertyList:fileNames forType:NSFilesPromisePboardType];
+	UTType *type = nil;
+	if (extension.length) {
+		type = [UTType typeWithFilenameExtension:extension];
+	}
+	NSString *typeIdentifier = type.identifier ?: (NSString *)UTTypeData.identifier;
 
-	return YES;
+	NSFilePromiseProvider *provider = [[NSFilePromiseProvider alloc] initWithFileType:typeIdentifier
+																			 delegate:self];
+	// Stash the tree so the delegate callbacks can recover it.
+	provider.userInfo = tree;
+	return provider;
 }
 
-- (NSArray *)outlineView:(NSOutlineView *)outlineView namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination forDraggedItems:(NSArray *)items
+- (NSString *)filePromiseProvider:(NSFilePromiseProvider *)filePromiseProvider fileNameForType:(NSString *)fileType
 {
-	NSMutableArray *fileNames = [NSMutableArray array];
-	for (id obj in items) {
-		PBGitTree *tree = [obj representedObject];
-		[fileNames addObject:[tree path]];
-		[tree saveToFolder:[dropDestination path]];
+	PBGitTree *tree = (PBGitTree *)filePromiseProvider.userInfo;
+	NSString *name = tree.path.lastPathComponent;
+	return name.length ? name : @"file";
+}
+
+- (void)filePromiseProvider:(NSFilePromiseProvider *)filePromiseProvider
+		  writePromiseToURL:(NSURL *)url
+		  completionHandler:(void (^)(NSError * _Nullable))completionHandler
+{
+	PBGitTree *tree = (PBGitTree *)filePromiseProvider.userInfo;
+
+	// The system-provided URL already encodes <dropDestination>/<filename>,
+	// where <filename> came from -filePromiseProvider:fileNameForType:.
+	// Since tree.path is a single component for the items the outline view
+	// exposes, [tree saveToFolder:parent.path] writes the blob (or directory
+	// tree) at exactly the URL we were handed — same on-disk result as the
+	// legacy namesOfPromisedFilesDroppedAtDestination: code path.
+	NSString *parentPath = url.URLByDeletingLastPathComponent.path;
+	if (!parentPath) {
+		NSDictionary *info = @{ NSLocalizedDescriptionKey : @"No parent directory for drop destination" };
+		completionHandler([NSError errorWithDomain:@"PBQLOutlineView" code:1 userInfo:info]);
+		return;
 	}
-	return fileNames;
+
+	[tree saveToFolder:parentPath];
+	completionHandler(nil);
 }
 
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent

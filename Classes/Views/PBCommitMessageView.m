@@ -66,14 +66,23 @@
 {
 	NSPasteboard *pboard = [sender draggingPasteboard];
 
-	if ([[pboard types] containsObject:NSFilenamesPboardType]) {
-		NSArray *filenames = [pboard propertyListForType:NSFilenamesPboardType];
+	// Read file URLs the modern way. NSFilenamesPboardType was deprecated in
+	// macOS 10.14; readObjectsForClasses:[NSURL …] is the supported API.
+	NSDictionary *readOptions = @{
+		NSPasteboardURLReadingFileURLsOnlyKey : @YES
+	};
+	NSArray<NSURL *> *fileURLs = [pboard readObjectsForClasses:@[ [NSURL class] ]
+													   options:readOptions];
+
+	if (fileURLs.count > 0) {
 		NSString *baseDir = [self.repository.workingDirectory stringByAppendingString:@"/"];
 		if (baseDir) {
-			NSMutableArray *relativeNames = [NSMutableArray new];
-			for (NSString *filename in filenames) {
+			NSMutableArray<NSString *> *relativeNames = [NSMutableArray new];
+			for (NSURL *url in fileURLs) {
+				NSString *filename = url.path;
+				if (!filename) continue;
 				if ([filename hasPrefix:baseDir]) {
-					NSString *relativeName = [filename substringFromIndex:(baseDir.length)];
+					NSString *relativeName = [filename substringFromIndex:baseDir.length];
 					if (relativeName.length) {
 						[relativeNames addObject:relativeName];
 						continue;
@@ -85,6 +94,7 @@
 			[pboard writeObjects:relativeNames];
 		}
 	}
+
 	return [super performDragOperation:sender];
 }
 
