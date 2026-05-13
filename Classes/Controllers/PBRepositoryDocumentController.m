@@ -11,6 +11,8 @@
 #import "PBGitRevList.h"
 #import "PBGitBinary.h"
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import <ObjectiveGit/GTRepository.h>
 
 @implementation PBRepositoryDocumentController
@@ -20,7 +22,10 @@
 {
 	[openPanel setCanChooseFiles:YES];
 	[openPanel setCanChooseDirectories:YES];
-	[openPanel setAllowedFileTypes:[NSArray arrayWithObject:@"git"]];
+	UTType *gitType = [UTType typeWithFilenameExtension:@"git"];
+	if (gitType) {
+		openPanel.allowedContentTypes = @[ gitType ];
+	}
 
 	NSModalResponse response = [openPanel runModal];
 
@@ -36,7 +41,7 @@
 	[op setAllowsMultipleSelection:NO];
 	[op setMessage:NSLocalizedString(@"Initialize a repository here:", @"Message at the top of the repository initialisation file selection dialogue box")];
 	[op setTitle:NSLocalizedString(@"New Repository", @"Title of the repository initialisation file selection dialogue box")];
-	if ([op runModal] != NSFileHandlingPanelOKButton) {
+	if ([op runModal] != NSModalResponseOK) {
 		if (outError) {
 			*outError = [NSError errorWithDomain:NSCocoaErrorDomain code:NSUserCancelledError userInfo:nil];
 		}

@@ -39,7 +39,7 @@ const BOOL SHUFFLE_COLORS = NO;
 		float segment = 1.0f / colorCount;
 		NSMutableArray *colors = [NSMutableArray new];
 		for (size_t i = 0; i < colorCount; ++i) {
-			NSColor *newColor = [NSColor colorWithCalibratedHue:(segment * i) saturation:0.7f brightness:0.8f alpha:1.0f];
+			NSColor *newColor = [NSColor colorWithCalibratedHue:(segment * (float)i) saturation:0.7f brightness:0.8f alpha:1.0f];
 			[colors addObject:newColor];
 		}
 		if (SHUFFLE_COLORS) {
@@ -95,7 +95,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	} else {
 		NSBezierPath *path = [NSBezierPath bezierPath];
 		[path setLineWidth:2];
-		[path setLineCapStyle:NSRoundLineCapStyle];
+		[path setLineCapStyle:NSLineCapStyleRound];
 		[path moveToPoint:source];
 		[path lineToPoint:center];
 		[path stroke];
@@ -156,7 +156,7 @@ const BOOL SHUFFLE_COLORS = NO;
 
 	long c = cellInfo.position;
 	NSPoint origin = r.origin;
-	NSPoint columnOrigin = {origin.x + COLUMN_WIDTH * c, origin.y};
+	NSPoint columnOrigin = {origin.x + COLUMN_WIDTH * (CGFloat)c, origin.y};
 	NSRect oval = {columnOrigin.x - 5, columnOrigin.y + r.size.height * 0.5 - 5, 10, 10};
 
 	if ([self isCurrentCommit]) {
@@ -174,9 +174,9 @@ const BOOL SHUFFLE_COLORS = NO;
 
 	NSPoint top;
 	if (sign == '<')
-		top.x = round(r.origin.x) + 10 * c + 4;
+		top.x = round(r.origin.x) + 10 * (CGFloat)c + 4;
 	else {
-		top.x = round(r.origin.x) + 10 * c - 4;
+		top.x = round(r.origin.x) + 10 * (CGFloat)c - 4;
 		columnWidth *= -1;
 	}
 	top.y = r.origin.y + (r.size.height - columnHeight) / 2;
@@ -203,7 +203,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] initWithCapacity:2];
 	NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 
-	[style setAlignment:NSCenterTextAlignment];
+	[style setAlignment:NSTextAlignmentCenter];
 	[attributes setObject:style forKey:NSParagraphStyleAttributeName];
 
 	[attributes setObject:[NSFont systemFontOfSize:10] forKey:NSFontAttributeName];
@@ -295,7 +295,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	cellInfo = [self.objectValue lineInfo];
 
 	if (cellInfo && ![controller hasNonlinearPath]) {
-		float pathWidth = 10 + COLUMN_WIDTH * cellInfo.numColumns;
+		float pathWidth = 10 + COLUMN_WIDTH * (float)cellInfo.numColumns;
 
 		NSRect ownRect;
 		NSDivideRect(rect, &ownRect, &rect, pathWidth, NSMinXEdge);
@@ -338,7 +338,7 @@ const BOOL SHUFFLE_COLORS = NO;
 		float pathWidth = 0;
 
 		if (!controller.hasNonlinearPath) {
-			pathWidth = 10 + COLUMN_WIDTH * cellInfo.numColumns;
+			pathWidth = 10 + COLUMN_WIDTH * (float)cellInfo.numColumns;
 		}
 
 		NSRect ownRect;
@@ -374,7 +374,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	cellInfo = [self.objectValue lineInfo];
 	float pathWidth = 0;
 	if (cellInfo && ![controller hasNonlinearPath])
-		pathWidth = 10 + 10 * cellInfo.numColumns;
+		pathWidth = 10 + 10 * (float)cellInfo.numColumns;
 
 	int index = 0;
 	NSRect refRect = NSMakeRect(pathWidth, 0, 1000, 10000);
@@ -393,7 +393,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	cellInfo = [self.objectValue lineInfo];
 	float pathWidth = 0;
 	if (cellInfo && ![controller hasNonlinearPath])
-		pathWidth = 10 + 10 * cellInfo.numColumns;
+		pathWidth = 10 + 10 * (float)cellInfo.numColumns;
 	NSRect refRect = NSMakeRect(pathWidth, 0, 1000, 10000);
 
 	return [[[self rectsForRefsinRect:refRect] objectAtIndex:index] rectValue];

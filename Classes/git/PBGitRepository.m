@@ -297,7 +297,13 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		branchRef = headRef;
 	}
 
-	_headRef = [[PBGitRevSpecifier alloc] initWithRef:[PBGitRef refFromString:branchRef.name]];
+	NSString *branchRefName = branchRef.name;
+	if (!branchRefName) {
+		// resolvedReferenceWithError can return a reference without a name on
+		// an unborn or detached HEAD; treat that as "no current ref".
+		return nil;
+	}
+	_headRef = [[PBGitRevSpecifier alloc] initWithRef:[PBGitRef refFromString:branchRefName]];
 	_headOID = branchRef.OID;
 
 	return _headRef;

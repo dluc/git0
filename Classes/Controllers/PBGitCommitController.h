@@ -11,7 +11,7 @@
 
 @class PBGitIndex;
 
-@interface PBGitCommitController : PBViewController
+@interface PBGitCommitController : PBViewController <NSMenuItemValidation>
 
 - (IBAction)refresh:(id)sender;
 - (IBAction)prepareCommitMessage:(id)sender;

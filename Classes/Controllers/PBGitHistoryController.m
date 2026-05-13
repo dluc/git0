@@ -382,7 +382,9 @@
 		return;
 	PBGitTree *tree = [selectedFiles objectAtIndex:0];
 	NSString *name = [tree tmpFileNameForContents];
-	[[NSWorkspace sharedWorkspace] openFile:name];
+	if (name) {
+		[[NSWorkspace sharedWorkspace] openURL:[NSURL fileURLWithPath:name]];
+	}
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -676,7 +678,10 @@
 		if ([[[self.repository headRef] ref] isEqualToRef:ref])
 			return NO;
 
-		NSData *data = [NSKeyedArchiver archivedDataWithRootObject:[NSArray arrayWithObjects:[NSNumber numberWithInteger:row], [NSNumber numberWithInt:index], NULL]];
+		NSArray *rowAndIndex = @[ @(row), @(index) ];
+		NSData *data = [NSKeyedArchiver archivedDataWithRootObject:rowAndIndex
+											 requiringSecureCoding:NO
+															 error:NULL];
 		[pboard declareTypes:[NSArray arrayWithObject:@"PBGitRef"] owner:self];
 		[pboard setData:data forType:@"PBGitRef"];
 	} else {
@@ -723,7 +728,8 @@
 	if (!data)
 		return NO;
 
-	NSArray *numbers = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+	NSSet *allowed = [NSSet setWithObjects:[NSArray class], [NSNumber class], nil];
+	NSArray *numbers = [NSKeyedUnarchiver unarchivedObjectOfClasses:allowed fromData:data error:NULL];
 	int oldRow = [[numbers objectAtIndex:0] intValue];
 	if (oldRow == row)
 		return NO;
@@ -873,7 +879,7 @@
 - (BOOL)previewPanel:(id)panel handleEvent:(NSEvent *)event
 {
 	// redirect all key down events to the table view
-	if ([event type] == NSKeyDown) {
+	if ([event type] == NSEventTypeKeyDown) {
 		[fileBrowser keyDown:event];
 		return YES;
 	}

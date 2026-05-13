@@ -686,7 +686,9 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 	[pboard declareTypes:[NSArray arrayWithObjects:FileChangesTableViewType, NSFilenamesPboardType, nil] owner:self];
 
 	// Internal, for dragging from one tableview to the other
-	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:rowIndexes];
+	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:rowIndexes
+										 requiringSecureCoding:NO
+														 error:NULL];
 	[pboard setData:data forType:FileChangesTableViewType];
 
 	// External, to drag them to for example XCode or Textmate
@@ -722,7 +724,9 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 {
 	NSPasteboard *pboard = [info draggingPasteboard];
 	NSData *rowData = [pboard dataForType:FileChangesTableViewType];
-	NSIndexSet *rowIndexes = [NSKeyedUnarchiver unarchiveObjectWithData:rowData];
+	NSIndexSet *rowIndexes = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSIndexSet class]
+															   fromData:rowData
+																  error:NULL];
 
 	NSArrayController *controller = [aTableView tag] == 0 ? stagedFilesController : unstagedFilesController;
 	NSArray *files = [[controller arrangedObjects] objectsAtIndexes:rowIndexes];

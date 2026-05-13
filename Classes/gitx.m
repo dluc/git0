@@ -326,7 +326,7 @@ int main(int argc, const char **argv)
 		}
 
 		// gitx can be used to pipe diff output to be displayed in GitX
-		if (!isatty(STDIN_FILENO) && fdopen(STDIN_FILENO, "r"))
+		if (!isatty(STDIN_FILENO))
 			handleSTDINDiff();
 
 

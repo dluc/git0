@@ -21,7 +21,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PBGitWindowController : NSWindowController <NSWindowDelegate>
+@interface PBGitWindowController : NSWindowController <NSWindowDelegate, NSMenuItemValidation>
 
 @property (nonatomic, strong) PBGitRepository *repository;
 /* This is assign because that's what NSWindowController says :-S */

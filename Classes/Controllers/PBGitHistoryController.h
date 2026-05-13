@@ -22,7 +22,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PBGitHistoryController : PBViewController
+@interface PBGitHistoryController : PBViewController <NSMenuItemValidation>
 
 @property (readonly) NSArrayController *commitController;
 @property (readonly) NSTreeController *treeController;

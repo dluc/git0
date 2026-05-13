@@ -35,7 +35,7 @@
 
 	if ([PBGitDefaults commitMessageViewHasVerticalLine]) {
 		CGFloat characterWidth = [@" " sizeWithAttributes:[self typingAttributes]].width;
-		CGFloat lineWidth = characterWidth * [PBGitDefaults commitMessageViewVerticalLineLength];
+		CGFloat lineWidth = characterWidth * (CGFloat)[PBGitDefaults commitMessageViewVerticalLineLength];
 		NSRect line;
 		CGFloat padding;
 		CGFloat textViewHeight = [self bounds].size.height;
@@ -51,7 +51,7 @@
 		NSRectFill(line);
 
 		// and one for the body of the commit message
-		lineWidth = characterWidth * [PBGitDefaults commitMessageViewVerticalBodyLineLength];
+		lineWidth = characterWidth * (CGFloat)[PBGitDefaults commitMessageViewVerticalBodyLineLength];
 		[[NSColor darkGrayColor] set];
 		padding = [[self textContainer] lineFragmentPadding];
 		line.origin.x = padding + lineWidth;

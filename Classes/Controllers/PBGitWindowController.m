@@ -265,11 +265,19 @@
 		}
 	}
 
-	[[NSWorkspace sharedWorkspace] openURLs:nonSubmoduleURLs
-					withAppBundleIdentifier:nil
-									options:0
-			 additionalEventParamDescriptor:nil
-						  launchIdentifiers:NULL];
+	// Open each URL with its default application. The deprecated bulk
+	// openURLs:withAppBundleIdentifier:... behaved this way when the
+	// identifier was nil.
+	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+	NSWorkspaceOpenConfiguration *config = [NSWorkspaceOpenConfiguration configuration];
+	for (NSURL *fileURL in nonSubmoduleURLs) {
+		[workspace openURL:fileURL
+			 configuration:config
+		 completionHandler:^(NSRunningApplication *_Nullable app, NSError *_Nullable error) {
+			// Best-effort: log failures but otherwise ignore.
+			if (error) PBLogError(error);
+		 }];
+	}
 }
 
 - (void)revealURLsInFinder:(NSArray<NSURL *> *)fileURLs

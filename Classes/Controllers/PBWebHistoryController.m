@@ -237,10 +237,10 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 		GTDiffFile *newFile = delta.newFile;
 		NSUInteger oldFileSize = oldFile.size;
 		NSUInteger newFileSize = newFile.size;
-		if (oldFileSize == 0 && (oldFile.flags & GIT_DIFF_FLAG_EXISTS)) {
+		if (oldFileSize == 0 && (oldFile.flags & (GTDiffFileFlag)GIT_DIFF_FLAG_EXISTS)) {
 			oldFileSize = reallyGetFileSize(repo, newFile);
 		}
-		if (newFileSize == 0 && (newFile.flags & GIT_DIFF_FLAG_EXISTS)) {
+		if (newFileSize == 0 && (newFile.flags & (GTDiffFileFlag)GIT_DIFF_FLAG_EXISTS)) {
 			newFileSize = reallyGetFileSize(repo, newFile);
 		}
 		[fileDeltas addObject:@{

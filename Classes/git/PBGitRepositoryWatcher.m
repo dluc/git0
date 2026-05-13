@@ -290,7 +290,11 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 	if (!eventStream) return;
 
-	FSEventStreamScheduleWithRunLoop(eventStream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+	// FSEventStreamScheduleWithRunLoop is deprecated since macOS 13.0; the
+	// dispatch-queue API is the modern replacement. We use the main queue so
+	// that downstream notifications (which post to the main run loop) keep
+	// the same semantics as the previous run-loop scheduling.
+	FSEventStreamSetDispatchQueue(eventStream, dispatch_get_main_queue());
 	FSEventStreamStart(eventStream);
 
 	_running = YES;
@@ -303,7 +307,7 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 	if (eventStream) {
 		FSEventStreamStop(eventStream);
-		FSEventStreamUnscheduleFromRunLoop(eventStream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+		FSEventStreamSetDispatchQueue(eventStream, NULL);
 	}
 
 	_running = NO;

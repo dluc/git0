@@ -496,11 +496,11 @@
 	panelRect.origin.y = windowFrame.origin.y + historyFrame.origin.y + ((historyFrame.size.height - kRewindPanelSize) / 2.0f);
 
 	NSPanel *panel = [[NSPanel alloc] initWithContentRect:panelRect
-												styleMask:NSBorderlessWindowMask
+												styleMask:NSWindowStyleMaskBorderless
 												  backing:NSBackingStoreBuffered
 													defer:YES];
 	[panel setIgnoresMouseEvents:YES];
-	[panel setOneShot:YES];
+	// setOneShot: is a no-op on modern macOS; just drop it.
 	[panel setOpaque:NO];
 	[panel setBackgroundColor:[NSColor clearColor]];
 	[panel setHasShadow:NO];
@@ -508,7 +508,8 @@
 
 	NSBox *box = [[NSBox alloc] initWithFrame:[[panel contentView] frame]];
 	[box setBoxType:NSBoxCustom];
-	[box setBorderType:NSLineBorder];
+	// borderType is deprecated on macOS 10.15+ for NSBoxCustom; the border is
+	// driven by borderColor/borderWidth on this style.
 	[box setFillColor:[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f]];
 	[box setBorderColor:[NSColor colorWithCalibratedWhite:0.5f alpha:0.5f]];
 	[box setCornerRadius:12.0f];
@@ -550,7 +551,7 @@
 	NSImage *reversedRewindImage = [NSImage imageWithSize:rewindImage.size
 												  flipped:isReversed
 										   drawingHandler:^BOOL(NSRect destRect) {
-											   [rewindImage drawInRect:destRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
+											   [rewindImage drawInRect:destRect fromRect:NSZeroRect operation:NSCompositingOperationCopy fraction:1.0];
 											   return YES;
 										   }];
 	NSImageView *rewindImageView = [rewindPanel.contentView viewWithTag:kRewindPanelImageViewTag];
