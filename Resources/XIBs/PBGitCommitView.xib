@@ -29,7 +29,10 @@
             <rect key="frame" x="0.0" y="0.0" width="852" height="432"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <splitView autosaveName="Commit" translatesAutoresizingMaskIntoConstraints="NO" id="186">
+                <visualEffectView blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="pbg-Bk-Drp">
+                    <rect key="frame" x="0.0" y="0.0" width="852" height="432"/>
+                </visualEffectView>
+                <splitView autosaveName="Commit" dividerStyle="thick" translatesAutoresizingMaskIntoConstraints="NO" id="186" customClass="PBVisibleSplitView">
                     <rect key="frame" x="0.0" y="0.0" width="852" height="432"/>
                     <subviews>
                         <webView id="125">
@@ -45,11 +48,11 @@
                                 <outlet property="frameLoadDelegate" destination="96" id="137"/>
                             </connections>
                         </webView>
-                        <splitView autosaveName="Staging" vertical="YES" id="209">
+                        <splitView autosaveName="Staging" vertical="YES" id="209" customClass="PBVisibleSplitView">
                             <rect key="frame" x="0.0" y="190" width="852" height="242"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
-                                <customView id="FOi-Rk-wnw" userLabel="Unstaged Changes">
+                                <customView id="FOi-Rk-wnw" userLabel="Unstaged Changes" customClass="PBGrayPanelView">
                                     <rect key="frame" x="0.0" y="0.0" width="200" height="242"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <subviews>
@@ -170,13 +173,13 @@
                                         <constraint firstItem="ITt-kt-YH0" firstAttribute="leading" secondItem="FOi-Rk-wnw" secondAttribute="leading" constant="8" id="M2k-cd-7fE"/>
                                         <constraint firstItem="45" firstAttribute="top" secondItem="ITt-kt-YH0" secondAttribute="bottom" constant="6" id="P9q-py-7X0"/>
                                         <constraint firstItem="ITt-kt-YH0" firstAttribute="top" secondItem="FOi-Rk-wnw" secondAttribute="top" constant="2" id="Ygn-8i-HH6"/>
-                                        <constraint firstItem="45" firstAttribute="leading" secondItem="FOi-Rk-wnw" secondAttribute="leading" constant="-1" id="gkg-D4-v1J"/>
+                                        <constraint firstItem="45" firstAttribute="leading" secondItem="FOi-Rk-wnw" secondAttribute="leading" id="gkg-D4-v1J"/>
                                         <constraint firstAttribute="bottom" secondItem="45" secondAttribute="bottom" id="j8F-kw-lmV"/>
                                         <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ITt-kt-YH0" secondAttribute="trailing" constant="8" id="jOB-wF-92U"/>
                                         <constraint firstAttribute="trailing" secondItem="45" secondAttribute="trailing" id="qp3-ed-r5f"/>
                                     </constraints>
                                 </customView>
-                                <customView id="fA8-wt-jQi" userLabel="Commit Message">
+                                <customView id="fA8-wt-jQi" userLabel="Commit Message" customClass="PBGrayPanelView">
                                     <rect key="frame" x="209" y="0.0" width="434" height="242"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <subviews>
@@ -270,7 +273,7 @@ DQ
                                         <constraint firstItem="P1c-vk-8Qi" firstAttribute="leading" secondItem="fA8-wt-jQi" secondAttribute="leading" constant="8" id="op8-MO-G4f"/>
                                     </constraints>
                                 </customView>
-                                <customView id="lDL-L2-ZSR" userLabel="Staged Changes">
+                                <customView id="lDL-L2-ZSR" userLabel="Staged Changes" customClass="PBGrayPanelView">
                                     <rect key="frame" x="652" y="0.0" width="200" height="242"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <subviews>
@@ -423,6 +426,10 @@ DQ
                 <constraint firstAttribute="trailing" secondItem="186" secondAttribute="trailing" id="Q1v-qo-dwt"/>
                 <constraint firstAttribute="bottom" secondItem="186" secondAttribute="bottom" id="UXU-FH-JIF"/>
                 <constraint firstItem="186" firstAttribute="top" secondItem="1" secondAttribute="top" id="pHQ-eq-e7r"/>
+                <constraint firstItem="pbg-Bk-Drp" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="pbg-ld-Ld1"/>
+                <constraint firstAttribute="trailing" secondItem="pbg-Bk-Drp" secondAttribute="trailing" id="pbg-td-Td1"/>
+                <constraint firstItem="pbg-Bk-Drp" firstAttribute="top" secondItem="1" secondAttribute="top" id="pbg-tp-Tp1"/>
+                <constraint firstAttribute="bottom" secondItem="pbg-Bk-Drp" secondAttribute="bottom" id="pbg-bt-Bt1"/>
             </constraints>
             <point key="canvasLocation" x="141" y="35"/>
         </customView>
