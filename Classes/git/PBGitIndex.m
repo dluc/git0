@@ -646,16 +646,16 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 {
 	NSString *parameter = [NSString stringWithFormat:@"-U%lu", context];
 	if (staged) {
-		NSArray *arguments = nil;
-		if (file.status == NEW) {
-			NSString *indexPath = [@":0:" stringByAppendingString:file.path];
-			arguments = @[ @"show", indexPath ];
-		} else {
-			arguments = @[ @"diff-index", parameter, @"--cached", self.parentTree, @"--", file.path ];
-		}
-
+		// diff-index against the parent tree (the empty tree if HEAD is
+		// missing) produces the right output for both NEW and MODIFIED files
+		// in the index. For a newly-added file we get a /dev/null -> file
+		// diff with `new file mode` and `+` lines; for a modified file we
+		// get the usual hunks. We no longer special-case NEW with
+		// `git show :0:path`, which returned the raw blob (not a diff) and
+		// forced the JS to render staged adds as plain text.
 		NSError *error = nil;
-		NSString *output = [self.repository outputOfTaskWithArguments:arguments error:&error];
+		NSString *output = [self.repository outputOfTaskWithArguments:@[ @"diff-index", parameter, @"--cached", self.parentTree, @"--", file.path ]
+																error:&error];
 		if (!output) {
 			PBLogError(error);
 		}
@@ -664,6 +664,22 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 
 	// unstaged
 	if (file.status == NEW) {
+		// A NEW file with staged changes IS in the index — there's a real
+		// "previous version" to diff the working tree against. The plumbing
+		// `git diff-files -p -- path` does exactly that.
+		//
+		// A NEW file with no staged changes is genuinely untracked: there is
+		// no index entry, so we fall back to showing the raw file contents.
+		if (file.hasStagedChanges) {
+			NSError *error = nil;
+			NSString *output = [self.repository outputOfTaskWithArguments:@[ @"diff-files", parameter, @"--", file.path ]
+																	error:&error];
+			if (!output) {
+				PBLogError(error);
+			}
+			return output;
+		}
+
 		NSStringEncoding encoding;
 		NSError *error = nil;
 		NSURL *fileURL = [self.repository.workingDirectoryURL URLByAppendingPathComponent:file.path];

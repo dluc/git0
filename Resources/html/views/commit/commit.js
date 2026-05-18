@@ -61,7 +61,15 @@ var showFileChanges = function(file, cached) {
 		Controller.refresh();
 	}
 
-	if (file.status == 0) // New file?
+	// NEW + no staged changes => truly untracked: show the working-tree
+	// contents in a <pre> block (we have no "before" version to diff against).
+	//
+	// NEW + staged changes => the file has been added to the index. We can
+	// show a real diff for both sides:
+	//   - cached=true: diff index vs /dev/null = the staged contents as
+	//     a `+`-only diff.
+	//   - cached=false: working tree vs index = any edits made after staging.
+	if (file.status == 0 && !file.hasStagedChanges)
 		return showNewFile(file);
 
 	setTitle((cached ? "Staged" : "Unstaged") + " changes for " + file.path);
