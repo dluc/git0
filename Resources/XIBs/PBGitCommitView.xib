@@ -101,7 +101,7 @@
                                                                                         </constraints>
                                                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" id="gyO-Ir-XpH">
                                                                                             <connections>
-                                                                                                <binding destination="e9b-HD-M7f" name="value" keyPath="objectValue.icon" id="ldh-Du-0n1"/>
+                                                                                                <binding destination="e9b-HD-M7f" name="value" keyPath="objectValue.unstagedIcon" id="ldh-Du-0n1"/>
                                                                                             </connections>
                                                                                         </imageCell>
                                                                                     </imageView>
@@ -322,7 +322,7 @@ DQ
                                                                                         </constraints>
                                                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" id="7FH-J2-KR4">
                                                                                             <connections>
-                                                                                                <binding destination="8lw-Oj-JVc" name="value" keyPath="objectValue.icon" id="on4-aw-JGr"/>
+                                                                                                <binding destination="8lw-Oj-JVc" name="value" keyPath="objectValue.stagedIcon" id="on4-aw-JGr"/>
                                                                                             </connections>
                                                                                         </imageCell>
                                                                                     </imageView>

@@ -32,6 +32,8 @@ typedef enum {
 @property (assign) BOOL hasStagedChanges, hasUnstagedChanges;
 
 - (NSImage *)icon;
+- (NSImage *)stagedIcon;
+- (NSImage *)unstagedIcon;
 - (NSString *)indexInfo;
 
 - (id)initWithPath:(NSString *)p;
