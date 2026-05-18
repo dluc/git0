@@ -12,6 +12,64 @@
 #import "PBHistorySearchController.h"
 
 
+#pragma mark Bundle identifier resolution
+
+// The gitx CLI shim ships inside the GitX app bundle at
+// <GitX.app>/Contents/Resources/gitx. The bundle identifier used to talk
+// to the running app over Scripting Bridge is therefore the identifier
+// of *our parent .app*, not a hard-coded constant — otherwise any build
+// that overrides PRODUCT_BUNDLE_IDENTIFIER (e.g. a personal signed
+// build) crashes here when SBApplication returns a stub for the wrong
+// identifier and we then call open:withOptions: on it.
+//
+// We resolve once at first use and cache the result. If anything goes
+// wrong we fall back to the hard-coded kGitXBundleIdentifier so an
+// out-of-bundle launch still has *some* sensible default.
+static NSString *gitxAppBundleIdentifier(void)
+{
+	static NSString *cached = nil;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{
+		NSString *resolved = nil;
+
+		// Climb from the CLI binary up to the enclosing .app and read
+		// its Info.plist. NSBundle.mainBundle would return the CLI's
+		// own (essentially empty) bundle, so we walk by hand.
+		//
+		// Build an absolute path: argv[0] can be a bare name, a relative
+		// path, or already absolute. Run it through the current working
+		// directory and then resolve symlinks so paths like
+		//   ~/bin/gitx -> /Applications/GitX.app/Contents/Resources/gitx
+		// end up at the real executable.
+		NSString *argv0 = [[NSProcessInfo processInfo] arguments].firstObject;
+		if (argv0.length > 0) {
+			NSString *path = argv0;
+			if (!path.isAbsolutePath) {
+				NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
+				if (cwd.length > 0) {
+					path = [cwd stringByAppendingPathComponent:path];
+				}
+			}
+			path = path.stringByResolvingSymlinksInPath.stringByStandardizingPath;
+			while (path.length > 1) {
+				if ([path.pathExtension isEqualToString:@"app"]) {
+					NSBundle *bundle = [NSBundle bundleWithPath:path];
+					NSString *bid = bundle.bundleIdentifier;
+					if (bid.length > 0) {
+						resolved = bid;
+					}
+					break;
+				}
+				path = path.stringByDeletingLastPathComponent;
+			}
+		}
+
+		cached = resolved ?: kGitXBundleIdentifier;
+	});
+	return cached;
+}
+
+
 #pragma mark Commands handled locally
 
 void usage(char const *programName)
@@ -99,7 +157,7 @@ void handleSTDINDiff(void)
 	NSString *diff = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 
 	if (diff && [diff length] > 0) {
-		GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+		GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:gitxAppBundleIdentifier()];
 		[gitXApp setSendMode:kAENoReply];
 		[gitXApp activate];
 		[gitXApp showDiff:diff];
@@ -109,7 +167,7 @@ void handleSTDINDiff(void)
 
 void handleDiffWithArguments(NSURL *repositoryURL, NSArray *arguments)
 {
-	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:gitxAppBundleIdentifier()];
 	[gitXApp setSendMode:kAENoReply];
 	[gitXApp activate];
 	[gitXApp performDiffIn:repositoryURL withOptions:arguments];
@@ -118,7 +176,7 @@ void handleDiffWithArguments(NSURL *repositoryURL, NSArray *arguments)
 
 void handleOpenRepository(NSURL *repositoryURL, NSArray *arguments)
 {
-	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:gitxAppBundleIdentifier()];
 	[gitXApp setSendMode:kAENoReply];
 	[gitXApp open:repositoryURL withOptions:arguments];
 	[gitXApp activate];
@@ -127,7 +185,7 @@ void handleOpenRepository(NSURL *repositoryURL, NSArray *arguments)
 
 void handleInit(NSURL *repositoryURL)
 {
-	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:gitxAppBundleIdentifier()];
 	[gitXApp createRepository:repositoryURL];
 
 	exit(0);
@@ -144,7 +202,7 @@ void handleClone(NSURL *repositoryURL, NSMutableArray *arguments)
 				repositoryURL = url;
 		}
 
-		GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+		GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:gitxAppBundleIdentifier()];
 		[gitXApp cloneRepository:repository to:repositoryURL isBare:NO];
 	} else {
 		printf("Error: --clone needs the URL of the repository to clone.\n");
@@ -212,7 +270,7 @@ void handleGitXSearch(NSURL *repositoryURL, PBHistorySearchMode mode, NSMutableA
 	if ([searchString isEqualToString:@""])
 		exit(0);
 
-	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:gitxAppBundleIdentifier()];
 	[gitXApp open:[NSArray arrayWithObject:repositoryURL]];
 
 	// need to find the document after opening it

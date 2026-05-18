@@ -13,3 +13,10 @@ GitX.xcworkspace/xcshareddata/swiftpm/
 /Dev.xcconfig
 .gsd/
 .bg-shell/
+
+# Personal signing workflow — see signing/README.md.
+# config.local.sh holds your code-signing identity and team ID.
+# out/ holds the produced .app and its DerivedData. Neither should
+# ever be checked in.
+signing/config.local.sh
+signing/out/
