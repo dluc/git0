@@ -29,7 +29,7 @@
             <rect key="frame" x="0.0" y="0.0" width="852" height="432"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <visualEffectView blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="pbg-Bk-Drp">
+                <visualEffectView blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="pbg-Bk-Drp" customClass="PBBackdropView">
                     <rect key="frame" x="0.0" y="0.0" width="852" height="432"/>
                 </visualEffectView>
                 <splitView autosaveName="Commit" dividerStyle="thick" translatesAutoresizingMaskIntoConstraints="NO" id="186" customClass="PBVisibleSplitView">
@@ -53,7 +53,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <customView id="FOi-Rk-wnw" userLabel="Unstaged Changes" customClass="PBGrayPanelView">
-                                    <rect key="frame" x="0.0" y="0.0" width="200" height="242"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="180" height="242"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ITt-kt-YH0">
@@ -179,102 +179,8 @@
                                         <constraint firstAttribute="trailing" secondItem="45" secondAttribute="trailing" id="qp3-ed-r5f"/>
                                     </constraints>
                                 </customView>
-                                <customView id="fA8-wt-jQi" userLabel="Commit Message" customClass="PBGrayPanelView">
-                                    <rect key="frame" x="209" y="0.0" width="434" height="242"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="P1c-vk-8Qi">
-                                            <rect key="frame" x="6" y="226" width="95" height="14"/>
-                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Commit Message" id="Bcp-yC-R3J">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <scrollView scrollerStyle="overlay" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="130">
-                                            <rect key="frame" x="0.0" y="30" width="434" height="190"/>
-                                            <clipView key="contentView" id="0Ty-JR-WNQ">
-                                                <rect key="frame" x="1" y="1" width="432" height="188"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                <subviews>
-                                                    <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" continuousSpellChecking="YES" allowsUndo="YES" linkDetection="YES" textReplacement="YES" grammarChecking="YES" smartInsertDelete="YES" id="133" customClass="PBCommitMessageView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="432" height="188"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <size key="minSize" width="432" height="188"/>
-                                                        <size key="maxSize" width="1161" height="10000000"/>
-                                                        <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                                    </textView>
-                                                </subviews>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="132">
-                                                <rect key="frame" x="-100" y="-100" width="87" height="18"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                            </scroller>
-                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="131">
-                                                <rect key="frame" x="416" y="2" width="16" height="186"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                            </scroller>
-                                        </scrollView>
-                                        <box borderType="none" title="Commit Actions" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="etY-27-JTj">
-                                            <rect key="frame" x="-3" y="-4" width="440" height="29"/>
-                                            <view key="contentView" id="vlh-ec-vC5">
-                                                <rect key="frame" x="0.0" y="0.0" width="440" height="29"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                <subviews>
-                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="coC-RC-dhM">
-                                                        <rect key="frame" x="352" y="-3" width="88" height="32"/>
-                                                        <buttonCell key="cell" type="push" title="Commit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wNE-Rq-NpC">
-                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="system"/>
-                                                            <string key="keyEquivalent" base64-UTF8="YES">
-DQ
-</string>
-                                                            <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                                                        </buttonCell>
-                                                        <connections>
-                                                            <action selector="commit:" target="-2" id="csT-V6-zQ9"/>
-                                                        </connections>
-                                                    </button>
-                                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="e4Y-vA-x9M">
-                                                        <rect key="frame" x="4" y="6" width="65" height="18"/>
-                                                        <buttonCell key="cell" type="check" title="Amend" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="pYj-lv-tp6">
-                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                            <font key="font" metaFont="system"/>
-                                                            <string key="keyEquivalent">a</string>
-                                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                                        </buttonCell>
-                                                        <connections>
-                                                            <binding destination="-2" name="value" keyPath="index.amend" id="ZRJ-cU-Xy4"/>
-                                                        </connections>
-                                                    </button>
-                                                </subviews>
-                                                <constraints>
-                                                    <constraint firstItem="coC-RC-dhM" firstAttribute="centerY" secondItem="vlh-ec-vC5" secondAttribute="centerY" id="cB9-4o-nl8"/>
-                                                    <constraint firstAttribute="trailing" secondItem="coC-RC-dhM" secondAttribute="trailing" constant="6" id="g7L-s5-QjA"/>
-                                                    <constraint firstAttribute="bottom" secondItem="coC-RC-dhM" secondAttribute="bottom" constant="4" id="iIW-4E-KKp"/>
-                                                    <constraint firstItem="e4Y-vA-x9M" firstAttribute="leading" secondItem="vlh-ec-vC5" secondAttribute="leading" constant="6" id="s3c-80-Pa9"/>
-                                                    <constraint firstItem="coC-RC-dhM" firstAttribute="baseline" secondItem="e4Y-vA-x9M" secondAttribute="baseline" id="tgU-sM-CsV"/>
-                                                </constraints>
-                                            </view>
-                                        </box>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="etY-27-JTj" secondAttribute="bottom" id="0GE-BF-IZ2"/>
-                                        <constraint firstAttribute="trailing" secondItem="130" secondAttribute="trailing" id="Iuc-jL-ZS4"/>
-                                        <constraint firstItem="etY-27-JTj" firstAttribute="leading" secondItem="fA8-wt-jQi" secondAttribute="leading" id="Ixi-iZ-LLB"/>
-                                        <constraint firstItem="130" firstAttribute="leading" secondItem="fA8-wt-jQi" secondAttribute="leading" id="Kch-IT-q2r"/>
-                                        <constraint firstAttribute="bottom" secondItem="130" secondAttribute="bottom" constant="30" id="Ob9-1e-W3V"/>
-                                        <constraint firstItem="P1c-vk-8Qi" firstAttribute="top" secondItem="fA8-wt-jQi" secondAttribute="top" constant="2" id="Rrg-pg-cJH"/>
-                                        <constraint firstItem="130" firstAttribute="top" secondItem="P1c-vk-8Qi" secondAttribute="bottom" constant="6" id="SgE-RV-9fr"/>
-                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="P1c-vk-8Qi" secondAttribute="trailing" constant="8" id="ZoG-34-IyT"/>
-                                        <constraint firstItem="etY-27-JTj" firstAttribute="centerX" secondItem="130" secondAttribute="centerX" id="ahQ-wr-Fqq"/>
-                                        <constraint firstItem="P1c-vk-8Qi" firstAttribute="leading" secondItem="fA8-wt-jQi" secondAttribute="leading" constant="8" id="op8-MO-G4f"/>
-                                    </constraints>
-                                </customView>
                                 <customView id="lDL-L2-ZSR" userLabel="Staged Changes" customClass="PBGrayPanelView">
-                                    <rect key="frame" x="652" y="0.0" width="200" height="242"/>
+                                    <rect key="frame" x="180" y="0.0" width="180" height="242"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="FxO-GB-WSc">
@@ -401,14 +307,108 @@ DQ
                                         <constraint firstItem="54" firstAttribute="leading" secondItem="lDL-L2-ZSR" secondAttribute="leading" id="soM-IB-QqO"/>
                                     </constraints>
                                 </customView>
+                                <customView id="fA8-wt-jQi" userLabel="Commit Message" customClass="PBGrayPanelView">
+                                    <rect key="frame" x="360" y="0.0" width="474" height="242"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <subviews>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="P1c-vk-8Qi">
+                                            <rect key="frame" x="6" y="226" width="95" height="14"/>
+                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Commit Message" id="Bcp-yC-R3J">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <scrollView scrollerStyle="overlay" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="130">
+                                            <rect key="frame" x="0.0" y="30" width="434" height="190"/>
+                                            <clipView key="contentView" id="0Ty-JR-WNQ">
+                                                <rect key="frame" x="1" y="1" width="432" height="188"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" continuousSpellChecking="YES" allowsUndo="YES" linkDetection="YES" textReplacement="YES" grammarChecking="YES" smartInsertDelete="YES" id="133" customClass="PBCommitMessageView">
+                                                        <rect key="frame" x="0.0" y="0.0" width="432" height="188"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <size key="minSize" width="432" height="188"/>
+                                                        <size key="maxSize" width="1161" height="10000000"/>
+                                                        <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </textView>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </clipView>
+                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="132">
+                                                <rect key="frame" x="-100" y="-100" width="87" height="18"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="131">
+                                                <rect key="frame" x="416" y="2" width="16" height="186"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                        </scrollView>
+                                        <box borderType="none" title="Commit Actions" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="etY-27-JTj">
+                                            <rect key="frame" x="-3" y="-4" width="440" height="29"/>
+                                            <view key="contentView" id="vlh-ec-vC5">
+                                                <rect key="frame" x="0.0" y="0.0" width="440" height="29"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="coC-RC-dhM">
+                                                        <rect key="frame" x="352" y="-3" width="88" height="32"/>
+                                                        <buttonCell key="cell" type="push" title="Commit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wNE-Rq-NpC">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                                            <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="commit:" target="-2" id="csT-V6-zQ9"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="e4Y-vA-x9M">
+                                                        <rect key="frame" x="4" y="6" width="65" height="18"/>
+                                                        <buttonCell key="cell" type="check" title="Amend" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="pYj-lv-tp6">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                            <string key="keyEquivalent">a</string>
+                                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <binding destination="-2" name="value" keyPath="index.amend" id="ZRJ-cU-Xy4"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="coC-RC-dhM" firstAttribute="centerY" secondItem="vlh-ec-vC5" secondAttribute="centerY" id="cB9-4o-nl8"/>
+                                                    <constraint firstAttribute="trailing" secondItem="coC-RC-dhM" secondAttribute="trailing" constant="6" id="g7L-s5-QjA"/>
+                                                    <constraint firstAttribute="bottom" secondItem="coC-RC-dhM" secondAttribute="bottom" constant="4" id="iIW-4E-KKp"/>
+                                                    <constraint firstItem="e4Y-vA-x9M" firstAttribute="leading" secondItem="vlh-ec-vC5" secondAttribute="leading" constant="6" id="s3c-80-Pa9"/>
+                                                    <constraint firstItem="coC-RC-dhM" firstAttribute="baseline" secondItem="e4Y-vA-x9M" secondAttribute="baseline" id="tgU-sM-CsV"/>
+                                                </constraints>
+                                            </view>
+                                        </box>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="etY-27-JTj" secondAttribute="bottom" id="0GE-BF-IZ2"/>
+                                        <constraint firstAttribute="trailing" secondItem="130" secondAttribute="trailing" id="Iuc-jL-ZS4"/>
+                                        <constraint firstItem="etY-27-JTj" firstAttribute="leading" secondItem="fA8-wt-jQi" secondAttribute="leading" id="Ixi-iZ-LLB"/>
+                                        <constraint firstItem="130" firstAttribute="leading" secondItem="fA8-wt-jQi" secondAttribute="leading" id="Kch-IT-q2r"/>
+                                        <constraint firstAttribute="bottom" secondItem="130" secondAttribute="bottom" constant="30" id="Ob9-1e-W3V"/>
+                                        <constraint firstItem="P1c-vk-8Qi" firstAttribute="top" secondItem="fA8-wt-jQi" secondAttribute="top" constant="2" id="Rrg-pg-cJH"/>
+                                        <constraint firstItem="130" firstAttribute="top" secondItem="P1c-vk-8Qi" secondAttribute="bottom" constant="6" id="SgE-RV-9fr"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="P1c-vk-8Qi" secondAttribute="trailing" constant="8" id="ZoG-34-IyT"/>
+                                        <constraint firstItem="etY-27-JTj" firstAttribute="centerX" secondItem="130" secondAttribute="centerX" id="ahQ-wr-Fqq"/>
+                                        <constraint firstItem="P1c-vk-8Qi" firstAttribute="leading" secondItem="fA8-wt-jQi" secondAttribute="leading" constant="8" id="op8-MO-G4f"/>
+                                    </constraints>
+                                </customView>
                             </subviews>
                             <constraints>
                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="100" id="pVV-lx-kad"/>
                             </constraints>
                             <holdingPriorities>
                                 <real value="251"/>
-                                <real value="250"/>
                                 <real value="251"/>
+                                <real value="250"/>
                             </holdingPriorities>
                         </splitView>
                     </subviews>
