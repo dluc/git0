@@ -163,15 +163,15 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 	NSAssert(([toolbarIdentifiers count] > 0),
 			 @"No items were added to the toolbar in -setupToolbar.");
 
-	if ([[self window] toolbar] == nil) {
-		NSToolbar *toolbar = [[NSToolbar alloc] initWithIdentifier:@"DBPreferencesToolbar"];
-		[toolbar setAllowsUserCustomization:NO];
-		[toolbar setAutosavesConfiguration:NO];
-		[toolbar setSizeMode:NSToolbarSizeModeDefault];
-		[toolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
-		[toolbar setDelegate:self];
-		[[self window] setToolbar:toolbar];
-	}
+	// Always recreate the toolbar so changes to setupToolbar take effect
+	// immediately without requiring users to delete preference autosaves.
+	NSToolbar *toolbar = [[NSToolbar alloc] initWithIdentifier:@"DBPreferencesToolbar"];
+	[toolbar setAllowsUserCustomization:NO];
+	[toolbar setAutosavesConfiguration:NO];
+	[toolbar setSizeMode:NSToolbarSizeModeDefault];
+	[toolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
+	[toolbar setDelegate:self];
+	[[self window] setToolbar:toolbar];
 
 	NSString *identifier = [self defaultViewIdentifier];
 	[[[self window] toolbar] setSelectedItemIdentifier:identifier];

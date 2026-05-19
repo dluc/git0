@@ -185,7 +185,25 @@ static OpenRecentController *recentsDialog = nil;
 
 - (IBAction)openPreferencesWindow:(id)sender
 {
-	[[PBPrefsWindowController sharedPrefsWindowController] showWindow:nil];
+	// Capture the parent window before showWindow: makes the prefs window key.
+	NSWindow *parentWindow = [NSApp keyWindow];
+
+	DBPrefsWindowController *prefs = [PBPrefsWindowController sharedPrefsWindowController];
+	[prefs showWindow:nil];
+
+	// showWindow: may restore an autosaved frame — reposition on the next
+	// run-loop pass so we always win.
+	NSWindow *prefsWindow = prefs.window;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		NSWindow *parent = parentWindow ?: [NSApp mainWindow];
+		if (parent && parent != prefsWindow) {
+			NSRect pf = parent.frame;
+			NSRect wf = prefsWindow.frame;
+			CGFloat x = NSMidX(pf) - wf.size.width  / 2.0;
+			CGFloat y = NSMidY(pf) - wf.size.height / 2.0;
+			[prefsWindow setFrameOrigin:NSMakePoint(x, y)];
+		}
+	});
 }
 
 - (IBAction)showAboutPanel:(id)sender
