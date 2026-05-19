@@ -31,6 +31,7 @@
 #define kSuppressedDialogWarnings @"Suppressed Dialog Warnings"
 #define kUseRepositoryWatcher @"PBUseRepositoryWatcher"
 #define kTerminalHandler @"PBTerminalHandler"
+#define kTranslucentUI @"PBTranslucentUI"
 
 @implementation PBGitDefaults
 
@@ -67,6 +68,8 @@
 					  forKey:kUseRepositoryWatcher];
 	[defaultValues setObject:@"com.apple.Terminal"
 					  forKey:kTerminalHandler];
+	[defaultValues setObject:[NSNumber numberWithBool:NO]
+					  forKey:kTranslucentUI];
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
 }
 
@@ -231,6 +234,11 @@
 + (NSString *)terminalHandler
 {
 	return [[NSUserDefaults standardUserDefaults] stringForKey:kTerminalHandler];
+}
+
++ (BOOL)isTranslucentUI
+{
+	return [[NSUserDefaults standardUserDefaults] boolForKey:kTranslucentUI];
 }
 
 @end

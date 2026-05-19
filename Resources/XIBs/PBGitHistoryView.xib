@@ -102,6 +102,9 @@
             <rect key="frame" x="0.0" y="0.0" width="955" height="434"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <visualEffectView blendingMode="behindWindow" material="sidebar" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="hst-bk-001" customClass="PBBackdropView">
+                    <rect key="frame" x="0.0" y="0.0" width="955" height="434"/>
+                </visualEffectView>
                 <splitView focusRingType="none" autosaveName="History" dividerStyle="thick" translatesAutoresizingMaskIntoConstraints="NO" id="2" customClass="PBHistorySplitView" userLabel="History Content View">
                     <rect key="frame" x="0.0" y="0.0" width="955" height="404"/>
                     <subviews>
@@ -600,7 +603,7 @@
                                                                 </webView>
                                                             </subviews>
                                                         </view>
-                                                        <color key="fillColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="fillColor" red="0" green="0" blue="0" alpha="0" colorSpace="calibratedRGB"/>
                                                     </box>
                                                 </subviews>
                                             </view>
@@ -841,6 +844,10 @@ IA
                 <constraint firstItem="316" firstAttribute="leading" secondItem="46" secondAttribute="leading" id="lGY-fX-QCA"/>
                 <constraint firstItem="316" firstAttribute="top" secondItem="46" secondAttribute="top" id="o5u-rI-HvB"/>
                 <constraint firstItem="2" firstAttribute="leading" secondItem="46" secondAttribute="leading" id="wKl-ht-Djh"/>
+                <constraint firstItem="hst-bk-001" firstAttribute="leading" secondItem="46" secondAttribute="leading" id="hst-ld-001"/>
+                <constraint firstAttribute="trailing" secondItem="hst-bk-001" secondAttribute="trailing" id="hst-td-001"/>
+                <constraint firstItem="hst-bk-001" firstAttribute="top" secondItem="46" secondAttribute="top" id="hst-tp-001"/>
+                <constraint firstAttribute="bottom" secondItem="hst-bk-001" secondAttribute="bottom" id="hst-bt-001"/>
             </constraints>
             <point key="canvasLocation" x="265.5" y="-24"/>
         </customView>

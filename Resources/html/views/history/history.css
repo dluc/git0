@@ -8,6 +8,7 @@ html, body {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
+	background: transparent !important;
 }
 
 #layout {
@@ -26,22 +27,22 @@ html, body {
 	max-width: 60%;
 	overflow-y: auto;
 	overflow-x: hidden;
-	border-right: 1px solid #d0d0d0;
 	box-sizing: border-box;
+	background: #fff;
 }
 
 /* Drag handle between area 3 and 4 */
 #detail-resize-handle {
-	flex: 0 0 5px;
-	width: 5px;
+	flex: 0 0 6px;
+	width: 6px;
 	cursor: col-resize;
-	background: #d8d8d8;
+	background: transparent;
 	position: relative;
 	z-index: 10;
 }
 #detail-resize-handle:hover,
 #detail-resize-handle.dragging {
-	background: #a0b8d8;
+	background: transparent;
 }
 
 /* Area 4 – diff output */
@@ -50,6 +51,7 @@ html, body {
 	overflow-y: auto;
 	overflow-x: hidden;
 	min-width: 100px;
+	background: #fff;
 }
 
 /* -----------------------------------------------------------------------

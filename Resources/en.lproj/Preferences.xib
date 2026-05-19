@@ -13,12 +13,13 @@
                 <outlet property="gitPathOpenAccessory" destination="62" id="65"/>
                 <outlet property="integrationPrefsView" destination="87" id="92"/>
                 <outlet property="updatesPrefsView" destination="4" id="7"/>
+                <outlet property="appearancePrefsView" destination="200" id="201"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="1" userLabel="General">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="250"/>
+            <rect key="frame" x="0.0" y="0.0" width="620" height="250"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="114">
@@ -203,7 +204,7 @@ or drag it from the Finder.</string>
             <point key="canvasLocation" x="30" y="125"/>
         </customView>
         <customView id="4" userLabel="Updates">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="139"/>
+            <rect key="frame" x="0.0" y="0.0" width="620" height="139"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="23">
@@ -303,10 +304,37 @@ or drag it from the Finder.</string>
             </subviews>
             <point key="canvasLocation" x="-102" y="-451"/>
         </customView>
+        <customView id="200" userLabel="Appearance">
+            <rect key="frame" x="0.0" y="0.0" width="620" height="80"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="202">
+                    <rect key="frame" x="103" y="52" width="80" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Interface:" id="203">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="204">
+                    <rect key="frame" x="187" y="50" width="250" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Use translucent panel backgrounds (requires relaunch)" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="205">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="28" name="value" keyPath="values.PBTranslucentUI" id="206"/>
+                    </connections>
+                </button>
+            </subviews>
+            <point key="canvasLocation" x="30" y="-500"/>
+        </customView>
         <customObject id="26" customClass="SUUpdater"/>
         <userDefaultsController representsSharedInstance="YES" id="28"/>
         <customView id="87" userLabel="Integration">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="116"/>
+            <rect key="frame" x="0.0" y="0.0" width="620" height="116"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="108">

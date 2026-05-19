@@ -20,10 +20,11 @@
 {
 	// GENERAL
 	[self addView:generalPrefsView label:@"General" image:[NSImage imageNamed:NSImageNameApplicationIcon]];
-	// INTERGRATION
+	// APPEARANCE
+	[self addView:appearancePrefsView label:@"Appearance" image:[NSImage imageNamed:NSImageNameColorPanel]];
+	// INTEGRATION
 	[self addView:integrationPrefsView label:@"Integration" image:[NSImage imageNamed:NSImageNameNetwork]];
-	// UPDATES
-	[self addView:updatesPrefsView label:@"Updates"];
+	// Updates tab intentionally omitted until update infrastructure is ready.
 }
 
 - (void)displayViewForIdentifier:(NSString *)identifier animate:(BOOL)animate

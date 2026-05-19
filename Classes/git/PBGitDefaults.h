@@ -30,6 +30,7 @@
 + (void)setHistorySearchMode:(NSInteger)mode;
 + (BOOL)useRepositoryWatcher;
 + (NSString *)terminalHandler;
++ (BOOL)isTranslucentUI;
 
 
 // Suppressed Dialog Warnings

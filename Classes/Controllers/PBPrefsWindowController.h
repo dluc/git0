@@ -14,6 +14,7 @@
 	IBOutlet NSView *generalPrefsView;
 	IBOutlet NSView *integrationPrefsView;
 	IBOutlet NSView *updatesPrefsView;
+	IBOutlet NSView *appearancePrefsView;
 
 	/* Variables for the Updates View */
 	IBOutlet NSPathControl *gitPathController;
