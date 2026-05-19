@@ -1,6 +1,64 @@
-body {
+/* -----------------------------------------------------------------------
+   Four-panel history layout
+   Area 3 (detail-panel): commit meta + file list   |  Area 4 (diff-panel): diffs
+   ----------------------------------------------------------------------- */
+
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+#layout {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+
+/* Area 3 – commit details + file list */
+#detail-panel {
+	flex: 0 0 auto;
+	width: 560px;
+	min-width: 160px;
+	max-width: 60%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	border-right: 1px solid #d0d0d0;
+	box-sizing: border-box;
+}
+
+/* Drag handle between area 3 and 4 */
+#detail-resize-handle {
+	flex: 0 0 5px;
+	width: 5px;
+	cursor: col-resize;
+	background: #d8d8d8;
+	position: relative;
+	z-index: 10;
+}
+#detail-resize-handle:hover,
+#detail-resize-handle.dragging {
+	background: #a0b8d8;
+}
+
+/* Area 4 – diff output */
+#diff-panel {
+	flex: 1 1 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	min-width: 100px;
+}
+
+/* -----------------------------------------------------------------------
+   Legacy commit info styles (area 3 contents)
+   ----------------------------------------------------------------------- */
+
+#commit {
 	padding: 0px;
-	border: 0px;
+	font-size: 12px;
 }
 
 #commit_header {
@@ -9,7 +67,6 @@ body {
 	padding-left: 5px;
 	padding-right: 5px;
 }
-
 #commit_header tr {
 	vertical-align: top;
 }
@@ -24,40 +81,31 @@ body {
 	top: 5px;
 }
 
-#buttons {
-}
-
 a.servicebutton {
-    display: block;
-    width: 80px;
-    padding: 2px;
-    margin-bottom: 4px;
-
-    border: 1px solid #3465a4;
-    background-color: #cce5ff;
-    color: #204a87;
-
-    font-size: 65%;
-    text-decoration: none;
-    text-align: center;
-
-    -webkit-border-radius: 2px;
+	display: block;
+	width: 80px;
+	padding: 2px;
+	margin-bottom: 4px;
+	border: 1px solid #3465a4;
+	background-color: #cce5ff;
+	color: #204a87;
+	font-size: 65%;
+	text-decoration: none;
+	text-align: center;
+	-webkit-border-radius: 2px;
 }
-
 a.servicebutton:hover {
 	padding: 1px;
 	border: 2px solid #3465a4;
 }
 
 .commit_info {
-  table-layout: fixed;
-  width: 100%;
+	table-layout: fixed;
+	width: 100%;
 }
-
 .commit_info th {
-  vertical-align: top;
+	vertical-align: top;
 }
-
 .commit_info .date {
 	font-family: Menlo, Monaco, monospace;
 }
@@ -67,10 +115,9 @@ a.servicebutton:hover {
 }
 
 .gravatar {
-  float: left;
-  margin-right: 5px;
+	float: left;
+	margin-right: 5px;
 }
-
 .gravatar img {
 	height: 30px;
 	width: 30px;
@@ -78,7 +125,7 @@ a.servicebutton:hover {
 
 .property_name {
 	width: 6em;
-	color:#7F7F7F;
+	color: #7F7F7F;
 	text-align: right;
 	font-weight: bold;
 }
@@ -88,9 +135,8 @@ a.servicebutton:hover {
 }
 
 #message_files {
-	margin: 5px;
-	padding-left: 1em;
-	width: auto;
+	margin: 0;
+	padding: 0;
 }
 
 #message {
@@ -101,20 +147,14 @@ a.servicebutton:hover {
 }
 
 .clear_both {
-	clear:both;
-	display:block;
-	height:1px;
-	line-height:0;
-	margin:1em;
-	visibility:hidden;
+	clear: both;
+	display: block;
+	height: 1px;
+	line-height: 0;
+	margin: 1em;
+	visibility: hidden;
 }
 
-#details {
-	font-family: Menlo, Monaco, monospace;
-	font-size: 10px;
-	overflow: hidden;
-	width: 600px;
-}
 hr {
 	border: 0;
 	height: 1px;
@@ -127,23 +167,6 @@ a {
 	color: rgb(20, 79, 174);
 }
 
-.showdiff, #no-commit-message {
-	text-decoration: none;
-	text-align: center;
-	font-size: 1.3em;
-    background-color: #d5d5d5;
-	display: block;
-	padding: 5px 10px;
-	width: 400px;
-	margin: 25px auto 25px auto;
-	-webkit-border-radius: 10px;
-	border: 1px solid #999;
-	-webkit-box-shadow: 1px 1px 2px #DDD;
-}
-.showdiff:hover {
-	background-color: #c4daff;
-}
-
 .refs {
 	font-size: 10px;
 	font-family: -apple-system, "Helvetica Neue", sans-serif;
@@ -151,32 +174,15 @@ a {
 	padding: 1px 4px;
 	-webkit-border-radius: 2px;
 }
+.refs.head       { background-color: #7ad254; }
+.refs.remote     { background-color: #82afef; }
+.refs.tag        { background-color: #fced4f; }
+.refs.currentBranch { background-color: #fca64f; }
 
-.refs.head {
-	background-color: #7ad254;
-}
-
-.refs.remote {
-	background-color: #82afef;
-}
-
-.refs.tag {
-	background-color: #fced4f;
-}
-
-.refs.currentBranch {
-	background-color: #fca64f;
-}
-#message_files {
-	margin: 0;
-	padding: 0;
-}
-#message {
-	padding: 10px;
-}
 #files {
 	margin: 10px 0;
 	padding: 0;
+	padding-bottom: 200px;
 }
 #files ul {
 	margin: 0;
@@ -187,12 +193,13 @@ a {
 	padding: 4px 10px;
 	color: #000;
 	height: 18px;
+	position: relative;
 }
 #files li.odd {
-    background-color: #f2f2f2;
+	background-color: #f2f2f2;
 }
 #files li:hover {
-    text-decoration: underline;
+	text-decoration: underline;
 	cursor: pointer;
 }
 #files img.changetype-icon {
@@ -208,13 +215,14 @@ a {
 }
 
 .top-link {
-    text-align: right;
-    margin-top: -5px;
-    margin-right: 20px;
-    padding-bottom: 5px;
-    font-size: 90%;
+	text-align: right;
+	margin-top: -5px;
+	margin-right: 20px;
+	padding-bottom: 5px;
+	font-size: 90%;
 }
 
+/* Diffstat bars — kept right-aligned inside the detail panel */
 #files .diffstat-info {
 	padding: 0;
 	position: absolute;
@@ -239,47 +247,68 @@ a {
 	background-color: #febfbf;
 	border: 1px solid #B00;
 }
-
 #files .diffstat-numbers {
 	font-size: 12px;
 	font-weight: bold;
 	white-space: nowrap;
 	padding: 1px 5px;
 	position: absolute;
-    height: 16px;
+	height: 16px;
 }
-
 #files .diffstat-numbers.summary {
-    border-left: 1px solid #656565;
+	border-left: 1px solid #656565;
 	-webkit-border-top-right-radius: 12px;
 	-webkit-border-bottom-right-radius: 12px;
 	right: 1px;
 	width: 35px;
 }
 #files .diffstat-numbers.details {
-    background-color: black;
-    color: #e3e3e3;
+	background-color: black;
+	color: #e3e3e3;
 	-webkit-border-top-left-radius: 12px;
 	-webkit-border-bottom-left-radius: 12px;
 	right: 46px;
 	text-align: right;
 }
-#files .diffstat-numbers.details .added {
-	color: #5db15d;
-}
-#files .diffstat-numbers.details .removed {
-	color: #f34b4e;
-}
-
+#files .diffstat-numbers.details .added  { color: #5db15d; }
+#files .diffstat-numbers.details .removed { color: #f34b4e; }
 #files .diffstat-numbers.binary {
 	display: inline-block;
 	right: 30px;
 }
 
-#notification_message .cancel {
-	color: red;
+/* -----------------------------------------------------------------------
+   Diff panel styles (area 4)
+   ----------------------------------------------------------------------- */
+
+#diff-panel .diff {
+	/* inherits from GitX.css */
 }
 
-#notification_message .confirm {
-	color: green;
+.showdiff, #no-commit-message {
+	text-decoration: none;
+	text-align: center;
+	font-size: 1.3em;
+	background-color: #d5d5d5;
+	display: block;
+	padding: 5px 10px;
+	width: 400px;
+	margin: 25px auto 25px auto;
+	-webkit-border-radius: 10px;
+	border: 1px solid #999;
+	-webkit-box-shadow: 1px 1px 2px #DDD;
 }
+.showdiff:hover {
+	background-color: #c4daff;
+}
+
+/* When #no-commit-message is outside #layout (shown when no commit selected) */
+#no-commit-message {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+#notification_message .cancel  { color: red; }
+#notification_message .confirm { color: green; }

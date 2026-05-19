@@ -115,6 +115,7 @@
 
 	[sourceView setTarget:self];
 	[sourceView setDoubleAction:@selector(doubleClicked:)];
+	[sourceView.enclosingScrollView setScrollerStyle:NSScrollerStyleOverlay];
 
 	[self menuNeedsUpdate:[actionButton menu]];
 

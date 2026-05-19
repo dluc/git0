@@ -112,6 +112,8 @@
 
 	[unstagedTable setTarget:self];
 	[stagedTable setTarget:self];
+	[unstagedTable.enclosingScrollView setScrollerStyle:NSScrollerStyleOverlay];
+	[stagedTable.enclosingScrollView setScrollerStyle:NSScrollerStyleOverlay];
 
 	[unstagedTable registerForDraggedTypes:[NSArray arrayWithObject:FileChangesTableViewType]];
 	[stagedTable registerForDraggedTypes:[NSArray arrayWithObject:FileChangesTableViewType]];

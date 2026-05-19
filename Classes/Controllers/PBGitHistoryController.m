@@ -36,6 +36,7 @@
 	IBOutlet NSArrayController *commitController;
 	IBOutlet NSTreeController *treeController;
 	IBOutlet PBWebHistoryController *webHistoryController;
+
 	IBOutlet GLFileView *fileView;
 	IBOutlet PBHistorySearchController *searchController;
 
@@ -72,6 +73,7 @@
 @synthesize treeController;
 @synthesize selectedCommits;
 
+
 - (void)awakeFromNib
 {
 	/* FIXME: Be careful with this method: since PBGitRevisionRow & PBGitRevisionCell
@@ -85,6 +87,10 @@
 	[super loadView];
 
 	[historySplitView pb_restoreAutosavedPositions];
+
+	// Force overlay-style scrollers on the commit list — the XIB attribute
+	// alone is ignored when fixedFrame=YES bakes in legacy scroller frames.
+	[commitList.enclosingScrollView setScrollerStyle:NSScrollerStyleOverlay];
 
 	self.selectedCommitDetailsIndex = [[NSUserDefaults standardUserDefaults] integerForKey:kHistorySelectedDetailIndexKey];
 
@@ -541,6 +547,7 @@
 {
 	return commitList;
 }
+
 
 - (void)scrollSelectionToTopOfViewFrom:(NSInteger)oldIndex
 {

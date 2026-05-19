@@ -102,7 +102,7 @@
             <rect key="frame" x="0.0" y="0.0" width="955" height="434"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <splitView focusRingType="none" autosaveName="History" translatesAutoresizingMaskIntoConstraints="NO" id="2" userLabel="History Content View">
+                <splitView focusRingType="none" autosaveName="History" dividerStyle="thick" translatesAutoresizingMaskIntoConstraints="NO" id="2" customClass="PBHistorySplitView" userLabel="History Content View">
                     <rect key="frame" x="0.0" y="0.0" width="955" height="404"/>
                     <subviews>
                         <customView fixedFrame="YES" id="309" userLabel="Commits Split View">
@@ -190,7 +190,7 @@
                                         </progressIndicator>
                                     </subviews>
                                 </customView>
-                                <scrollView focusRingType="none" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3" userLabel="Commits Scroll View">
+                                <scrollView scrollerStyle="overlay" focusRingType="none" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3" userLabel="Commits Scroll View">
                                     <rect key="frame" x="0.0" y="0.0" width="955" height="165"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="S8C-PP-4nT">
@@ -613,7 +613,7 @@
                                                     <splitView focusRingType="none" autosaveName="TreeTab" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9">
                                                         <rect key="frame" x="0.0" y="0.0" width="955" height="214"/>
                                                         <subviews>
-                                                            <scrollView focusRingType="none" fixedFrame="YES" borderType="none" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="10" userLabel="File List Scroll View">
+                                                            <scrollView scrollerStyle="overlay" focusRingType="none" fixedFrame="YES" borderType="none" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="10" userLabel="File List Scroll View">
                                                                 <rect key="frame" x="0.0" y="0.0" width="233" height="214"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                                                 <clipView key="contentView" id="TgF-cp-2Rq">
