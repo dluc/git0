@@ -1,69 +1,140 @@
-# What is GitX?
+# git0
 
-[![pull request](https://github.com/gitx/gitx/actions/workflows/BuildPR.yml/badge.svg)](https://github.com/gitx/gitx/actions/workflows/BuildPR.yml)
+git0 is a native macOS graphical client for the `git` version control system.
+It is a fork of [GitX](https://github.com/gitx/gitx), significantly redesigned
+and extended. The git0 repository is at https://github.com/dluc/git0.
 
-GitX is an OS X (MacOS) native graphical client for the `git` version
-control system.
+## What's different from GitX
 
-GitX has a long history of various branches and versions maintained by
-various people over the years. This github org & repo are an attempt to
-consolidate and move forward with a current, common, community-maintained
-version.
+- **Redesigned history view** — commit list, commit details, and diff are split
+  into independent resizable panels. Scroll the diff independently while keeping
+  the file list visible.
+- **Staging area reordered** — Unstaged → Staged → Commit Message, left to right.
+- **Translucency option** — solid backgrounds by default; enable translucent
+  sidebar/panel backgrounds in Preferences → Appearance.
+- **Settings button** — gear icon in the bottom toolbar opens Preferences
+  centred over the current window.
+- **Consistent scrollbars** — all scroll views use overlay-style scrollers.
 
-### How to Install:
+## Command-line usage
 
-Get the latest release of GitX from the [Releases](https://github.com/gitx/gitx/releases)
-page. Download, extract and move it to your Applications folder.
-For Apple Silicon (M1, M2 processors) please use the `arm64` release.
+The `git0` CLI binary is bundled inside the app at:
 
-See also: [How to Build in Xcode](#how-to-build-in-xcode)
+```
+git0.app/Contents/Resources/git0
+```
 
-### Screenshots
+Symlink it somewhere on your PATH to use it from the terminal:
 
-![Staging View](assets/screenshot-stage.png)
+```bash
+ln -s /Applications/git0.app/Contents/Resources/git0 /usr/local/bin/git0
+```
 
-![History View](assets/screenshot-history.png)
+### Open a repository
 
-### How to Build in Xcode:
+```bash
+# Open the repository in the current directory
+git0
 
-To build and run in the Xcode app with your own developer account, create
-a config file called `Dev.xcconfig` at the project root like this:
+# Open a specific directory
+git0 /path/to/repo
+```
+
+### History / branch filter
+
+```bash
+# View all branches
+git0 --all
+
+# View local branches only
+git0 --local
+
+# View the selected branch only
+git0 --branch
+
+# Select a specific branch on open
+git0 --branch main
+```
+
+### Commit / stage view
+
+```bash
+git0 --commit
+git0 -c
+```
+
+### Diff
+
+```bash
+# Show a diff in git0
+git0 --diff HEAD~3
+
+# Pipe a diff from stdin
+git diff | git0
+```
+
+### Search
+
+```bash
+# Search subject, author or SHA
+git0 --search=<string>
+git0 -s<string>
+
+# Pickaxe search (commits that add/remove string)
+git0 --Search=<string>
+git0 -S<string>
+
+# Regex search
+git0 --regex=<regex>
+git0 -r<regex>
+
+# Commits that touch a path
+git0 --path=<file>
+git0 -p<file>
+git0 -- <file>
+```
+
+### Repository operations
+
+```bash
+# Initialise a new repository and open it
+git0 --init
+
+# Clone a repository and open it
+git0 --clone <url>
+git0 --clone <url> <destination>
+```
+
+### Target a specific repository
+
+```bash
+# --git-dir must be the first argument
+git0 --git-dir=/path/to/repo [command]
+```
+
+### Other
+
+```bash
+git0 --version    # print version info
+git0 --help       # print usage
+```
+
+## How to Build in Xcode
+
+Create a `Dev.xcconfig` file at the project root:
 
 ```
 DEVELOPMENT_TEAM = YOUR_TEAM_ID
-CODE_SIGN_IDENTITY = YOUR_CERT_NAME
+CODE_SIGN_IDENTITY = Apple Development
 ENABLE_HARDENED_RUNTIME = YES
 ```
 
-Replace `YOUR_TEAM_ID` with your development team ID and `YOUR_CERT_NAME` with the name of your certificate.
-If you don't know your ID or don't have a certificate yet, follow the steps below.
+Replace `YOUR_TEAM_ID` with your Apple development team ID (found in
+Keychain Access → My Certificates → certificate details → Organizational Unit).
 
-The certificate name is usually something like _Apple Development, Mac Developer, iPhone Developer, Apple Developer,_ etc.
-In the steps below, we assume the certificate name to be _"Apple Development"_ but you should use the name you see in your keychain.
+Then open `GitX.xcodeproj` in Xcode and run.
 
-1. Open the **Xcode** app.
-2. In Settings > Accounts, if you haven't added your Apple ID yet, click the `+` button and add your Apple ID.
-3. In your Apple ID account settings, there should be at least one team with your name and **(Personal Team)** in the name. Click on it.
-4. Click on the **Manage Certificates** button.
-5. If you don't see any certificate listed, click the `+` button and click on **Apple Development**.
-6. Click Done and close the Settings window.
-7. Use Spotlight to open **Keychain Access** (or open it in Applications > Utilities).
-8. Go to the `login` keychain, and open the **My Certificates** tab.
-9. Find the certificate named **Apple Development** with your Apple ID email address.
-10. Double-click on this certificate to view its details.
-11. Copy the **Organizational Unit** value. This is your development team ID.
+## License
 
-You can also build and run on the command line. Once you've created the config file,
-you may use [the script shared here](https://github.com/gitx/gitx/discussions/366#discussion-4897466).
-For x86 builds, please replace `arm64` with `x86_64`.
-
-### Apple Silicon
-
-This project is supported by MacStadium Open Source Developer Program with a free Mac mini for our CI. Thank you !
-
-<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" width="300" />
-
-### License
-
-GitX is licensed under the GPL version 2. For more information, see the attached COPYING file.
-
+git0 is licensed under GPL version 2, the same as the upstream GitX project.
+See the `COPYING` file.

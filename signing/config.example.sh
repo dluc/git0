@@ -12,7 +12,7 @@
 CODE_SIGN_IDENTITY=""
 
 # OPTIONAL. Override the app bundle identifier. The upstream value is
-# net.phere.GitX. Use a different reverse-DNS prefix you control if
-# you want the signed app to live alongside another GitX installation.
-# Example: com.example.gitx
+# ai.dev.git0. Use a different reverse-DNS prefix you control if
+# you want the signed app to live alongside another git0 installation.
+# Example: com.example.git0
 PRODUCT_BUNDLE_IDENTIFIER=""

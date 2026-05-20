@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # signing/build.sh
 #
-# Build GitX with the repository's existing ad-hoc signing, then
+# Build git0 with the repository's existing ad-hoc signing, then
 # re-sign every binary inside the .app with your Apple Developer
 # identity. This avoids fighting Xcode's per-subproject signing
 # configuration (Sparkle, ObjectiveGit, MGScopeBar each have their own)
@@ -28,7 +28,7 @@ CONFIG_FILE="signing/config.local.sh"
 WORKSPACE="GitX.xcworkspace"
 SCHEME="GitX"
 OUT_DIR="$SCRIPT_DIR/out"
-APP_PATH="$OUT_DIR/GitX.app"
+APP_PATH="$OUT_DIR/git0.app"
 
 mode="release"
 if [[ $# -gt 0 ]]; then
@@ -151,12 +151,12 @@ xcodebuild \
   -destination 'platform=macOS' \
   build 2>&1 | tail -100
 
-BUILT_APP="$DERIVED_DATA/Build/Products/$CONFIG/GitX.app"
+BUILT_APP="$DERIVED_DATA/Build/Products/$CONFIG/git0.app"
 if [[ ! -d "$BUILT_APP" ]]; then
-  BUILT_APP="$(find "$DERIVED_DATA/Build/Products" -maxdepth 3 -name 'GitX.app' -print -quit 2>/dev/null || true)"
+  BUILT_APP="$(find "$DERIVED_DATA/Build/Products" -maxdepth 3 -name 'git0.app' -print -quit 2>/dev/null || true)"
 fi
 if [[ ! -d "$BUILT_APP" ]]; then
-  echo "Build succeeded(?) but GitX.app was not found under $DERIVED_DATA/Build/Products" >&2
+  echo "Build succeeded(?) but git0.app was not found under $DERIVED_DATA/Build/Products" >&2
   exit 1
 fi
 
@@ -210,8 +210,8 @@ done < <(find "$APP_PATH" \
   | awk '{ print length($0), $0 }' | sort -rn | cut -d' ' -f2-)
 
 # Sign loose helper binaries in Resources/ that aren't part of any
-# bundle (GitX ships the `gitx` CLI shim and `gitx_askpasswd` here).
-for tool in "$APP_PATH/Contents/Resources/gitx" "$APP_PATH/Contents/Resources/gitx_askpasswd"; do
+# bundle (git0 ships the `git0` CLI shim and `gitx_askpasswd` here).
+for tool in "$APP_PATH/Contents/Resources/git0" "$APP_PATH/Contents/Resources/git0_askpasswd"; do
   if [[ -f "$tool" ]]; then
     echo "    $tool"
     codesign --force --sign "$CODE_SIGN_IDENTITY" \

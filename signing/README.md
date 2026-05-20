@@ -1,6 +1,6 @@
-# Signing GitX with your Apple Developer ID
+# Signing git0 with your Apple Developer ID
 
-This folder is for **building GitX and re-signing the result with your
+This folder is for **building git0 and re-signing the result with your
 own Apple Developer identity**. Everything in it is gitignored —
 your certificate name, team ID, and any build output never end up in
 version control.
@@ -8,7 +8,7 @@ version control.
 ## How it works (in one paragraph)
 
 The repository's Xcode project uses ad-hoc signing (`CODE_SIGN_IDENTITY = "-"`)
-for every target — GitX itself plus the bundled `Sparkle`, `ObjectiveGit`,
+for every target — git0 itself plus the bundled `Sparkle`, `ObjectiveGit`,
 and `MGScopeBar` subprojects. Wiring a real identity into Xcode's
 build-time signing means touching all of those subprojects' signing
 settings and lining up a provisioning profile. We don't do that. Instead
@@ -46,8 +46,8 @@ identity changes.
 
    Optional:
    - `PRODUCT_BUNDLE_IDENTIFIER` — override the upstream
-     `net.phere.GitX` bundle ID. Useful if you want your signed build to
-     install alongside another GitX without conflicting.
+     `ai.dev.git0` bundle ID. Useful if you want your signed build to
+     install alongside another git0 without conflicting.
 
 ## Usage
 
@@ -58,7 +58,7 @@ identity changes.
 ./signing/build.sh open     # Reveal the signed build in Finder
 ```
 
-The signed app lands at `signing/out/GitX.app`. That directory is also
+The signed app lands at `signing/out/git0.app`. That directory is also
 gitignored.
 
 ## What gets signed
@@ -68,9 +68,9 @@ gitignored.
 - Every `.framework`, `.bundle`, `.app`, and `.xpc` inside the bundle —
   so Sparkle's XPC services, the Updater helper, ObjectiveGit, and
   MGScopeBar all get re-signed.
-- The `gitx` CLI shim and `gitx_askpasswd` helper in
+- The `git0` CLI shim and `git0_askpasswd` helper in
   `Contents/Resources/`.
-- The main `GitX.app` itself, last.
+- The main `git0.app` itself, last.
 
 Each `codesign` call uses `--options runtime --timestamp
 --preserve-metadata=identifier,entitlements,flags` — that's the

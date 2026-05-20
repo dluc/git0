@@ -75,13 +75,17 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 - (NSString *)displayName
 {
 	// Build our display name depending on the current HEAD and whether it's detached or not
+	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
+		?: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]
+		?: @"git0";
+
 	if (self.repository.gtRepo.isHEADDetached)
-		return [NSString stringWithFormat:NSLocalizedString(@"%@ (detached HEAD)", @""), self.repository.projectName];
+		return [NSString stringWithFormat:@"%@ · path: %@ (detached HEAD)", appName, self.repository.projectName];
 
 	if (self.repository.gtRepo.isHEADUnborn)
-		return [NSString stringWithFormat:NSLocalizedString(@"%@ (unborn HEAD)", @""), self.repository.projectName];
+		return [NSString stringWithFormat:@"%@ · path: %@ (unborn HEAD)", appName, self.repository.projectName];
 
-	return [NSString stringWithFormat:NSLocalizedString(@"%@ (branch: %@)", @""), self.repository.projectName, self.repository.headRef.description];
+	return [NSString stringWithFormat:@"%@ · path: %@ (branch: %@)", appName, self.repository.projectName, self.repository.headRef.description];
 }
 
 - (void)makeWindowControllers

@@ -68,8 +68,8 @@
 	[super synchronizeWindowTitleWithDocumentName];
 
 	if ([self isWindowLoaded]) {
-		// Point window proxy icon at project directory, not internal .git dir
-		[[self window] setRepresentedURL:self.repository.workingDirectoryURL];
+		// Clear proxy icon — title already contains path: <folder>
+		[[self window] setRepresentedURL:nil];
 	}
 }
 
@@ -129,7 +129,7 @@
 	// Explicitly set the frame using the autosave name
 	// Opening the first and second documents works fine, but the third and subsequent windows aren't positioned correctly
 	[[self window] setFrameUsingName:@"GitX"];
-	[[self window] setRepresentedURL:self.repository.workingDirectoryURL];
+	[[self window] setRepresentedURL:nil];
 
 	_sidebarController = [[PBGitSidebarController alloc] initWithRepository:self.repository superController:self];
 	_historyViewController = [[PBGitHistoryController alloc] initWithRepository:self.repository superController:self];

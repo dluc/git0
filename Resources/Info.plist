@@ -60,8 +60,10 @@
 	<string>0.13</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
+	<key>CFBundleDisplayName</key>
+	<string>git0</string>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>GitX needs authorization in order to open your Terminal application.</string>
+	<string>git0 needs authorization in order to open your Terminal application.</string>
 	<key>NSAppleScriptEnabled</key>
 	<true/>
 	<key>NSMainNibFile</key>
@@ -84,7 +86,7 @@
 			<key>NSMessage</key>
 			<string>completeSha</string>
 			<key>NSPortName</key>
-			<string>GitX</string>
+			<string>git0</string>
 			<key>NSReturnTypes</key>
 			<array>
 				<string>NSStringPboardType</string>
@@ -102,6 +104,6 @@
 	<key>SUEnableAutomaticChecks</key>
 	<false/>
 	<key>SUFeedURL</key>
-	<string>https://gitx.github.io/gitx/appcast.xml</string>
+	<string>https://ai.dev/git0/appcast.xml</string>
 </dict>
 </plist>

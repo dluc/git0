@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compile GitX from source without launching it.
+# Compile git0 from source without launching it.
 #
 # Usage:
 #   ./compile.sh             # Debug build

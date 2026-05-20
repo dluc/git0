@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build GitX from source (if needed) and launch it.
+# Build git0 from source (if needed) and launch it.
 #
 # Usage:
 #   ./run.sh             # build if stale, then launch
@@ -46,7 +46,7 @@ for arg in "$@"; do
   esac
 done
 
-APP_PATH="$BUILD_DIR/Build/Products/$CONFIG/GitX.app"
+APP_PATH="$BUILD_DIR/Build/Products/$CONFIG/git0.app"
 FP_PATH="$BUILD_DIR/Build/Products/$CONFIG/.gitx-build-fingerprint"
 
 # --- Fingerprint -------------------------------------------------------------
@@ -140,11 +140,11 @@ do_build() {
 
   if [[ ! -d "$APP_PATH" ]]; then
     # Fallback: search in case the products dir is named differently.
-    APP_PATH="$(find "$BUILD_DIR/Build/Products" -maxdepth 3 -name 'GitX.app' -print -quit 2>/dev/null || true)"
+    APP_PATH="$(find "$BUILD_DIR/Build/Products" -maxdepth 3 -name 'git0.app' -print -quit 2>/dev/null || true)"
   fi
 
   if [[ ! -d "$APP_PATH" ]]; then
-    echo "Build succeeded but GitX.app was not found under $BUILD_DIR/Build/Products" >&2
+    echo "Build succeeded but git0.app was not found under $BUILD_DIR/Build/Products" >&2
     exit 1
   fi
 
@@ -170,6 +170,6 @@ fi
 echo "==> $APP_PATH"
 
 if [[ "$LAUNCH" -eq 1 ]]; then
-  echo "==> Launching GitX"
+  echo "==> Launching git0"
   open -a "$APP_PATH"
 fi
