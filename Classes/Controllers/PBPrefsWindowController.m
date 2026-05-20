@@ -75,6 +75,30 @@
 	[PBGitDefaults resetAllDialogWarnings];
 }
 
+- (IBAction)resetLayout:(id)sender
+{
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+	// Remove all NSSplitView autosave positions and the window frame.
+	NSArray *keysToRemove = @[
+		@"NSSplitView Subview Frames Commit",
+		@"NSSplitView Subview Frames History",
+		@"NSSplitView Subview Frames Staging",
+		@"NSSplitView Subview Frames TreeTab",
+		@"NSSplitView Subview Frames sourceSplitView",
+		@"NSWindow Frame GitX",
+	];
+	for (NSString *key in keysToRemove)
+		[defaults removeObjectForKey:key];
+	[defaults synchronize];
+
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText     = NSLocalizedString(@"Layout reset", @"Reset layout alert title");
+	alert.informativeText = NSLocalizedString(@"Window and panel positions have been reset. Relaunch the app to apply.", @"Reset layout alert message");
+	[alert addButtonWithTitle:NSLocalizedString(@"OK", @"")];
+	[alert runModal];
+}
+
 #pragma mark -
 #pragma mark Git Path open panel actions
 

@@ -28,5 +28,6 @@
 - (IBAction)showHideAllFiles:sender;
 - (IBAction)resetGitPath:sender;
 - (IBAction)resetAllDialogWarnings:(id)sender;
+- (IBAction)resetLayout:(id)sender;
 
 @end

@@ -180,6 +180,7 @@ or drag it from the Finder.</string>
                         <binding destination="28" name="value" keyPath="values.PBCommitMessageViewVerticalBodyLineLength" id="Msp-0z-nMb"/>
                     </connections>
                 </stepper>
+
                 <button toolTip="Resets the &quot;Don't show this again&quot; preferences." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="136">
                     <rect key="frame" x="262" y="13" width="137" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -305,11 +306,11 @@ or drag it from the Finder.</string>
             <point key="canvasLocation" x="-102" y="-451"/>
         </customView>
         <customView id="200" userLabel="Appearance">
-            <rect key="frame" x="0.0" y="0.0" width="620" height="80"/>
+            <rect key="frame" x="0.0" y="0.0" width="620" height="100"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="202">
-                    <rect key="frame" x="103" y="52" width="80" height="17"/>
+                    <rect key="frame" x="103" y="68" width="80" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Interface:" id="203">
                         <font key="font" metaFont="system"/>
@@ -318,14 +319,34 @@ or drag it from the Finder.</string>
                     </textFieldCell>
                 </textField>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="204">
-                    <rect key="frame" x="187" y="50" width="250" height="18"/>
+                    <rect key="frame" x="187" y="66" width="320" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Use translucent panel backgrounds (requires relaunch)" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="205">
+                    <buttonCell key="cell" type="check" title="Use translucent panel backgrounds" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="205">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
                         <binding destination="28" name="value" keyPath="values.PBTranslucentUI" id="206"/>
+                    </connections>
+                </button>
+                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="303">
+                    <rect key="frame" x="103" y="22" width="80" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Layout:" id="304">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button toolTip="Resets window and panel positions to defaults." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="300">
+                    <rect key="frame" x="187" y="15" width="137" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="push" title="Reset Layout" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="301">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="resetLayout:" target="-2" id="302"/>
                     </connections>
                 </button>
             </subviews>
