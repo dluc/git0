@@ -1,0 +1,225 @@
+name: Release (manual)
+
+# Build, sign, notarize, and publish a signed DMG to a new GitHub Release.
+# Triggered manually from the Actions tab. Builds for arm64 and x86_64,
+# attaches both DMGs to one release.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v0.1.0). Leave blank to auto-generate.'
+        required: false
+      prerelease:
+        description: 'Mark release as pre-release'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-26
+            abi: arm64
+          - os: macos-15-intel
+            abi: x86_64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: recursive
+
+      - name: Read short version
+        id: version
+        run: |
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Resources/Info.plist)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Prepare openssl (downgrade to openssl@3, then unlink)
+        run: |
+          brew uninstall --ignore-dependencies openssl 2>/dev/null || true
+          rm -rf /usr/local/etc/openssl@3 /usr/local/etc/openssl@1.1 2>/dev/null || true
+          brew install openssl@3
+          brew unlink openssl@3
+
+      - name: Bootstrap objective-git and build libgit2
+        run: |
+          cd External/objective-git
+          ./script/bootstrap
+          ./script/update_libgit2
+
+      - name: Import code signing certificate
+        env:
+          APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 24)
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          echo "$APPLE_CERTIFICATE_P12" | base64 --decode > $RUNNER_TEMP/certificate.p12
+          security import $RUNNER_TEMP/certificate.p12 \
+            -k "$KEYCHAIN_PATH" \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign
+
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | tr -d '"')
+
+          rm -f $RUNNER_TEMP/certificate.p12
+
+          # Extract the Developer ID identity for codesign --sign
+          IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | grep "Developer ID Application" | head -1 | awk -F'"' '{print $2}')
+          if [ -z "$IDENTITY" ]; then
+            IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | head -1 | sed -E 's/^.*\) (.*)$/\1/')
+          fi
+          echo "CODE_SIGN_IDENTITY=$IDENTITY" >> "$GITHUB_ENV"
+          echo "Using identity: $IDENTITY"
+
+      - name: Build app
+        run: |
+          xcodebuild \
+            -workspace GitX.xcworkspace \
+            -scheme GitX \
+            -configuration Release \
+            -derivedDataPath build \
+            -destination "platform=macOS,arch=${{ matrix.abi }}" \
+            ARCHS="${{ matrix.abi }}" \
+            ONLY_ACTIVE_ARCH=YES \
+            build
+
+          BUILT_APP="build/Build/Products/Release/git0.app"
+          if [ ! -d "$BUILT_APP" ]; then
+            echo "git0.app not found"; find build/Build/Products -maxdepth 3 -name '*.app'; exit 1
+          fi
+          mkdir -p out && cp -R "$BUILT_APP" out/
+
+      - name: Sign app with Developer ID
+        run: |
+          APP_PATH="out/git0.app"
+
+          # Sign every nested bundle deepest-first
+          while IFS= read -r item; do
+            codesign --force --sign "$CODE_SIGN_IDENTITY" \
+              --options runtime --timestamp \
+              --preserve-metadata=entitlements,flags \
+              "$item"
+          done < <(find "$APP_PATH" \
+            \( -name '*.framework' -o -name '*.bundle' -o -name '*.app' -o -name '*.xpc' \) \
+            -type d \
+            | awk '{ print length($0), $0 }' | sort -rn | cut -d' ' -f2-)
+
+          # Loose helper binaries in Resources/
+          for tool in "$APP_PATH/Contents/Resources/git0" "$APP_PATH/Contents/Resources/git0_askpasswd"; do
+            if [ -f "$tool" ]; then
+              codesign --force --sign "$CODE_SIGN_IDENTITY" \
+                --options runtime --timestamp \
+                --preserve-metadata=entitlements,flags \
+                "$tool"
+            fi
+          done
+
+          # Main app last
+          codesign --force --sign "$CODE_SIGN_IDENTITY" \
+            --options runtime --timestamp \
+            --preserve-metadata=entitlements,flags \
+            "$APP_PATH"
+
+          # Verify
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+
+      - name: Notarize app
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          APP_PATH="out/git0.app"
+          ZIP_PATH="$RUNNER_TEMP/notarize.zip"
+
+          ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
+
+          xcrun notarytool submit "$ZIP_PATH" \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --wait
+
+          xcrun stapler staple "$APP_PATH"
+          spctl --assess --type execute --verbose=2 "$APP_PATH"
+
+      - name: Build DMG
+        run: |
+          APP_PATH="out/git0.app"
+          DMG_NAME="git0-${{ steps.version.outputs.version }}-${{ matrix.abi }}.dmg"
+
+          mkdir -p dist
+          cp -R "$APP_PATH" dist/
+          ln -s /Applications dist/Applications
+
+          hdiutil create -fs HFS+ -srcfolder dist -volname git0 "$DMG_NAME"
+          rm -rf dist
+
+          echo "DMG_NAME=$DMG_NAME" >> "$GITHUB_ENV"
+
+      - name: Clean up keychain
+        if: always()
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/signing.keychain-db
+          security delete-keychain "$KEYCHAIN_PATH" 2>/dev/null || true
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: git0-${{ matrix.abi }}-dmg
+          path: ${{ env.DMG_NAME }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read short version
+        id: version
+        run: |
+          VERSION=$(grep -A1 "CFBundleShortVersionString" Resources/Info.plist | tail -1 | sed -E 's/.*<string>(.*)<\/string>.*/\1/')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Compute tag
+        id: tag
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            SHORT=$(git rev-parse --short HEAD)
+            TAG="v${{ steps.version.outputs.version }}-build.${{ github.run_number }}.$SHORT"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Tag: $TAG"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: git0 ${{ steps.tag.outputs.tag }}
+          prerelease: ${{ inputs.prerelease }}
+          generate_release_notes: true
+          files: artifacts/**/*.dmg

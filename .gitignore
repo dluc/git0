@@ -13,6 +13,8 @@ GitX.xcworkspace/xcshareddata/swiftpm/
 /Dev.xcconfig
 .gsd/
 .bg-shell/
+log*.txt
+*.log
 
 # Personal signing workflow — see signing/README.md.
 # config.local.sh holds your code-signing identity and team ID.
