@@ -107,34 +107,52 @@ jobs:
 
       - name: Sign app with Developer ID
         run: |
+          set -euo pipefail
           APP_PATH="out/git0.app"
 
-          # Sign every nested bundle deepest-first
-          while IFS= read -r item; do
+          # An empty entitlements file. Resigning with this strips the
+          # com.apple.security.get-task-allow entitlement Xcode injects in
+          # Debug-like builds, which Apple notarization rejects.
+          EMPTY_ENT="$RUNNER_TEMP/empty.entitlements"
+          cat > "$EMPTY_ENT" <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict/></plist>
+          EOF
+
+          sign_one() {
             codesign --force --sign "$CODE_SIGN_IDENTITY" \
               --options runtime --timestamp \
-              --preserve-metadata=entitlements,flags \
-              "$item"
+              --entitlements "$EMPTY_ENT" \
+              "$1"
+          }
+
+          # 1) Bundles deepest-first (frameworks, helper apps, XPC services, plugin bundles).
+          while IFS= read -r item; do
+            echo "Signing bundle: $item"
+            sign_one "$item"
           done < <(find "$APP_PATH" \
             \( -name '*.framework' -o -name '*.bundle' -o -name '*.app' -o -name '*.xpc' \) \
             -type d \
             | awk '{ print length($0), $0 }' | sort -rn | cut -d' ' -f2-)
 
-          # Loose helper binaries in Resources/
-          for tool in "$APP_PATH/Contents/Resources/git0" "$APP_PATH/Contents/Resources/git0_askpasswd"; do
-            if [ -f "$tool" ]; then
-              codesign --force --sign "$CODE_SIGN_IDENTITY" \
-                --options runtime --timestamp \
-                --preserve-metadata=entitlements,flags \
-                "$tool"
+          # 2) All Mach-O executables not contained in a freshly-signed bundle.
+          #    `file --mime` reports Mach-O. We resign every one we find — duplicates
+          #    are harmless because codesign --force overwrites.
+          while IFS= read -r item; do
+            if file "$item" | grep -q "Mach-O"; then
+              echo "Signing binary: $item"
+              sign_one "$item"
             fi
-          done
+          done < <(find "$APP_PATH" -type f \
+            ! -path "*/Frameworks/*/Headers/*" \
+            ! -name "*.dylib.dSYM" \
+            -perm +111 \
+            | awk '{ print length($0), $0 }' | sort -rn | cut -d' ' -f2-)
 
-          # Main app last
-          codesign --force --sign "$CODE_SIGN_IDENTITY" \
-            --options runtime --timestamp \
-            --preserve-metadata=entitlements,flags \
-            "$APP_PATH"
+          # 3) Main app last.
+          echo "Signing main app: $APP_PATH"
+          sign_one "$APP_PATH"
 
           # Verify
           codesign --verify --deep --strict --verbose=2 "$APP_PATH"
@@ -150,11 +168,33 @@ jobs:
 
           ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
 
-          xcrun notarytool submit "$ZIP_PATH" \
+          # Submit and capture the JSON response so we have the submission id
+          # regardless of pass/fail.
+          set +e
+          SUBMIT_OUTPUT=$(xcrun notarytool submit "$ZIP_PATH" \
             --apple-id "$APPLE_ID" \
             --team-id "$APPLE_TEAM_ID" \
             --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-            --wait
+            --output-format json \
+            --wait)
+          SUBMIT_STATUS=$?
+          set -e
+
+          echo "$SUBMIT_OUTPUT"
+          SUBMISSION_ID=$(echo "$SUBMIT_OUTPUT" | sed -nE 's/.*"id":"([^"]+)".*/\1/p' | head -1)
+          NOTARY_STATUS=$(echo "$SUBMIT_OUTPUT" | sed -nE 's/.*"status":"([^"]+)".*/\1/p' | head -1)
+
+          if [ "$NOTARY_STATUS" != "Accepted" ]; then
+            echo "::error::Notarization failed: status=$NOTARY_STATUS, id=$SUBMISSION_ID"
+            if [ -n "$SUBMISSION_ID" ]; then
+              echo "Fetching Apple's notarization log…"
+              xcrun notarytool log "$SUBMISSION_ID" \
+                --apple-id "$APPLE_ID" \
+                --team-id "$APPLE_TEAM_ID" \
+                --password "$APPLE_APP_SPECIFIC_PASSWORD" || true
+            fi
+            exit 1
+          fi
 
           xcrun stapler staple "$APP_PATH"
           spctl --assess --type execute --verbose=2 "$APP_PATH"
