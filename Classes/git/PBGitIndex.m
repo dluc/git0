@@ -726,8 +726,19 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 					file.hasStagedChanges = YES;
 				else
 					file.hasUnstagedChanges = YES;
-				if ([[fileStatus objectAtIndex:4] isEqualToString:@"D"])
+
+				// Authoritatively re-derive status from the diff-* row.
+				// Earlier refreshes may have stamped a stale value (e.g.
+				// DELETED from a transient state). Without this reset a
+				// previously-deleted-then-restored file stays red.
+				NSString *src = [fileStatus objectAtIndex:0];
+				NSString *flag = [fileStatus objectAtIndex:4];
+				if ([flag isEqualToString:@"D"])
 					file.status = DELETED;
+				else if ([src isEqualToString:@":000000"])
+					file.status = NEW;
+				else
+					file.status = MODIFIED;
 			} else {
 				// Untracked file, set status to NEW, only unstaged changes
 				file.hasStagedChanges = NO;
