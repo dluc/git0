@@ -166,10 +166,14 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 		return;
 	}
 
-	// Enter the group for ALL tasks upfront, before launching any of them.
-	// This prevents dispatch_group_notify from firing prematurely if an
-	// early task completes before later tasks have called group_enter.
-	dispatch_group_enter(_indexRefreshGroup); // update-index
+	// We enter the group for the three READ tasks now. update-index runs
+	// first synchronously below (so the reads see a fresh index), then we
+	// kick off the reads. Without this ordering, diff-files races against
+	// update-index and may report files as modified that aren't actually
+	// modified — they become unattached PBChangedFile entries with no
+	// staged or unstaged changes, which the cleanup block at the end of
+	// the refresh fails to recognize, so they linger as ghost untracked
+	// rows in the staging view.
 	BOOL isBare = [self.repository isBareRepository];
 	if (!isBare) {
 		dispatch_group_enter(_indexRefreshGroup); // ls-files
@@ -204,19 +208,21 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 		[self postIndexRefreshFinished];
 	});
 
-	// Ask Git to refresh the index
-	[PBTask launchTask:[PBGitBinary path]
-				arguments:@[ @"update-index", @"-q", @"--unmerged", @"--ignore-missing", @"--refresh" ]
-			  inDirectory:self.repository.workingDirectoryURL.path
-		completionHandler:^(NSData *readData, NSError *error) {
-			if (error) {
-				[self postIndexRefreshSuccess:NO message:@"update-index failed"];
-			} else {
-				[self postIndexRefreshSuccess:YES message:@"update-index success"];
-			}
-
-			dispatch_group_leave(self->_indexRefreshGroup);
-		}];
+	// Ask Git to refresh the index SYNCHRONOUSLY. update-index --refresh
+	// updates the cached stat info for working-tree files whose mtime/size
+	// changed but whose content still matches the index. If we let the
+	// three read tasks below race against this, diff-files will report
+	// false positives that show up as ghost entries in the staging view.
+	{
+		NSError *refreshError = nil;
+		PBTask *refreshTask = [PBTask taskWithLaunchPath:[PBGitBinary path]
+											  arguments:@[ @"update-index", @"-q", @"--unmerged", @"--ignore-missing", @"--refresh" ]
+											inDirectory:self.repository.workingDirectoryURL.path];
+		// update-index returns non-zero when some entries still need an
+		// update after the refresh — that's informational, not a failure.
+		(void)[refreshTask launchTask:&refreshError];
+		[self postIndexRefreshSuccess:(refreshError == nil) message:@"update-index complete"];
+	}
 
 	if (isBare) {
 		return;
